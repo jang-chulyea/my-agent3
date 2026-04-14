@@ -1,0 +1,62 @@
+{
+  "pressure": {
+    "judgement_result": "possible",
+    "rules": [
+      {
+        "condition": "force increases while area stays the same",
+        "judgement_result": "increase",
+        "reasoning_steps": [
+          "Pressure is calculated as force divided by area.",
+          "If area is unchanged, increasing force increases the numerator.",
+          "Therefore pressure increases."
+        ]
+      },
+      {
+        "condition": "area increases while force stays the same",
+        "judgement_result": "decrease",
+        "reasoning_steps": [
+          "Pressure is calculated as force divided by area.",
+          "If force is unchanged, increasing area increases the denominator.",
+          "Therefore pressure decreases."
+        ]
+      }
+    ]
+  },
+  "force": {
+    "judgement_result": "possible",
+    "rules": [
+      {
+        "condition": "mass or acceleration increases",
+        "judgement_result": "increase",
+        "reasoning_steps": [
+          "Force is calculated as mass multiplied by acceleration.",
+          "Increasing either factor while the other is unchanged increases the product.",
+          "Therefore force increases."
+        ]
+      }
+    ]
+  },
+  "power": {
+    "judgement_result": "possible",
+    "rules": [
+      {
+        "condition": "work increases while time stays the same",
+        "judgement_result": "increase",
+        "reasoning_steps": [
+          "Power is calculated as work divided by time.",
+          "If time is unchanged, increasing work increases the numerator.",
+          "Therefore power increases."
+        ]
+      },
+      {
+        "condition": "time increases while work stays the same",
+        "judgement_result": "decrease",
+        "reasoning_steps": [
+          "Power is calculated as work divided by time.",
+          "If work is unchanged, increasing time increases the denominator.",
+          "Therefore power decreases."
+        ]
+      }
+    ]
+  }
+}

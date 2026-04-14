@@ -1,0 +1,7 @@
+{
+  "node_id": "BM-01-NUMBER",
+  "title": "Number",
+  "definition": {
+    "short": "A number represents quantity or count."
+  }
+}

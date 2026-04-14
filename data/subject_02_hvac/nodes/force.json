@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "node_id": "TD-00-FORCE",
+  "subject_id": "subject_02_hvac",
+  "title": "힘",
+  "category": "concept",
+  "difficulty": {
+    "exam_level": 1,
+    "learner_level": "beginner"
+  },
+  "status": "active",
+  "aliases": ["force", "힘", "작용력"],
+  "tags": ["기초물리", "역학"],
+  "definition": {
+    "short": "힘은 물체를 밀거나 당겨 상태를 바꾸려는 작용이다.",
+    "full": "힘은 물체를 밀거나 당기는 작용으로, 물체의 운동 상태를 변화시키거나 변형을 일으킬 수 있는 물리량이다."
+  },
+  "core_question": "무엇이 물체를 움직이게 하거나 변형시키는가?",
+  "prerequisites": [],
+  "related_nodes": ["TD-00-AREA", "TD-01-PRESSURE"],
+  "level_content": {
+    "level_1_intuition": {
+      "title": "밀거나 당기는 것",
+      "content": "문을 밀거나 서랍을 당기는 행동은 모두 힘의 예다."
+    },
+    "level_2_principle": {
+      "title": "힘은 상태 변화를 만든다",
+      "content": "힘은 물체를 움직이게 하거나 모양을 바꿀 수 있다."
+    },
+    "level_3_formula": {
+      "title": "수식으로 보는 힘",
+      "content": "힘은 질량과 가속도의 곱으로 표현할 수 있다.",
+      "formulas": [
+        {
+          "formula_id": "F-FORCE-001",
+          "expression": "F = m a",
+          "variables": {
+            "F": "힘",
+            "m": "질량",
+            "a": "가속도"
+          },
+          "unit": "N",
+          "description": "힘의 기본 관계식"
+        }
+      ]
+    },
+    "level_4_practical": {
+      "title": "시험과 실무에서의 힘",
+      "content": "압력 문제에서는 힘이 직접 주어지거나 질량으로부터 환산될 수 있다.",
+      "tips": ["질량과 힘을 구분한다."],
+      "common_mistakes": ["kg를 그대로 N처럼 쓰는 실수"]
+    }
+  },
+  "formulas": [
+    {
+      "formula_id": "F-FORCE-001",
+      "expression": "F = m a",
+      "variables": {
+        "F": "힘",
+        "m": "질량",
+        "a": "가속도"
+      },
+      "unit": "N",
+      "description": "힘의 기본 관계식"
+    }
+  ],
+  "examples": [],
+  "history": {
+    "summary": "힘 개념은 고전역학의 핵심 개념으로 정립되었다.",
+    "events": []
+  },
+  "media_refs": [],
+  "source_refs": [],
+  "retrieval_hints": {
+    "keywords": ["힘", "force"],
+    "common_phrases": ["미는 힘", "당기는 힘"],
+    "question_patterns": ["힘이란 무엇인가"]
+  },
+  "ui": {
+    "default_open_level": "level_1_intuition",
+    "accent_keywords": ["밀기", "당기기"]
+  },
+  "metadata": {
+    "created_at": "2026-04-09",
+    "updated_at": "2026-04-09",
+    "author": "OpenAI-ChatGPT"
+  }
+}

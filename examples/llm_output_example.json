@@ -1,0 +1,19 @@
+{
+  "answer": 24,
+  "unit": "m^2",
+  "steps": [
+    "Use the rectangle area formula: area = length * width.",
+    "Substitute the given values: area = 8 * 3.",
+    "Calculate the result: area = 24."
+  ],
+  "concept_chain": [
+    "rectangle",
+    "area",
+    "multiplication"
+  ],
+  "depth": {
+    "level1": "Identify the geometric shape.",
+    "level2": "Apply the correct area formula.",
+    "level3": "Compute the numeric answer with units."
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "pressure": {
+    "inputs": ["force", "area"],
+    "output": "pressure",
+    "operation": "divide",
+    "input_aliases": {
+      "force": ["force", "힘", "작용력", "하중", "f"],
+      "area": ["area", "면적", "단면적", "넓이", "a"]
+    },
+    "steps": [
+      "Read force and area.",
+      "Divide force by area.",
+      "Return pressure."
+    ],
+    "notes": ["Area must be non-zero."]
+  },
+  "force": {
+    "inputs": ["mass", "acceleration"],
+    "output": "force",
+    "operation": "multiply",
+    "input_aliases": {
+      "mass": ["mass", "질량", "m"],
+      "acceleration": ["acceleration", "가속도", "a"]
+    },
+    "steps": [
+      "Read mass and acceleration.",
+      "Multiply mass by acceleration.",
+      "Return force."
+    ],
+    "notes": []
+  },
+  "area": {
+    "inputs": ["width", "length"],
+    "output": "area",
+    "operation": "multiply",
+    "input_aliases": {
+      "width": ["width", "폭", "너비", "w"],
+      "length": ["length", "길이", "l"]
+    },
+    "steps": [
+      "Read width and length.",
+      "Multiply width by length.",
+      "Return area."
+    ],
+    "notes": []
+  },
+  "heat": {
+    "inputs": ["mass", "specific_heat", "temperature_change"],
+    "output": "heat",
+    "operation": "multiply",
+    "input_aliases": {
+      "mass": ["mass", "질량", "m"],
+      "specific_heat": ["specific_heat", "비열", "c"],
+      "temperature_change": ["temperature_change", "온도변화", "온도차", "delta_t", "dt"]
+    },
+    "steps": [
+      "Read mass, specific heat, and temperature change.",
+      "Multiply all three values.",
+      "Return heat."
+    ],
+    "notes": []
+  },
+  "work": {
+    "inputs": ["force", "distance"],
+    "output": "work",
+    "operation": "multiply",
+    "input_aliases": {
+      "force": ["force", "힘", "작용력", "하중", "f"],
+      "distance": ["distance", "거리", "이동거리", "d"]
+    },
+    "steps": [
+      "Read force and distance.",
+      "Multiply force by distance.",
+      "Return work."
+    ],
+    "notes": []
+  },
+  "efficiency": {
+    "inputs": ["useful_output", "input"],
+    "output": "efficiency",
+    "operation": "divide",
+    "input_aliases": {
+      "useful_output": ["useful_output", "유효출력", "유용출력", "출력"],
+      "input": ["input", "입력", "투입"]
+    },
+    "steps": [
+      "Read useful output and input.",
+      "Divide useful output by input.",
+      "Return efficiency."
+    ],
+    "notes": ["Input must be non-zero."]
+  },
+  "power": {
+    "inputs": ["work", "time"],
+    "output": "power",
+    "operation": "divide",
+    "input_aliases": {
+      "work": ["work", "일", "일량", "w"],
+      "time": ["time", "시간", "t"]
+    },
+    "steps": [
+      "Read work and time.",
+      "Divide work by time.",
+      "Return power."
+    ],
+    "notes": ["Time must be non-zero."]
+  },
+  "volume": {
+    "inputs": ["area", "length"],
+    "output": "volume",
+    "operation": "multiply",
+    "input_aliases": {
+      "area": ["area", "면적", "단면적", "넓이", "a"],
+      "length": ["length", "길이", "l"]
+    },
+    "steps": [
+      "Read area and length.",
+      "Multiply area by length.",
+      "Return volume."
+    ],
+    "notes": []
+  }
+}

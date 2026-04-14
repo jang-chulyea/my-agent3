@@ -1,0 +1,28 @@
+{
+  "id": "lecture_material_example_001",
+  "subject": "physics",
+  "topic": "gas_pressure",
+  "title": "Temperature and Pressure at Constant Volume",
+  "concepts": [
+    "temperature",
+    "pressure",
+    "constant_volume"
+  ],
+  "summary": "A short reference explaining why gas pressure rises when temperature increases at constant volume.",
+  "lecture_text": "At constant volume, gas particles move faster as temperature increases. More frequent and stronger collisions with the container walls increase pressure.",
+  "visual_hints": [
+    "Show a sealed container with faster particle motion.",
+    "Use arrows to connect temperature increase to pressure increase."
+  ],
+  "examples": [
+    {
+      "question": "What happens to pressure when temperature rises in a fixed-volume container?",
+      "answer": "Pressure increases."
+    }
+  ],
+  "tags": [
+    "gas_law",
+    "pressure",
+    "temperature"
+  ]
+}

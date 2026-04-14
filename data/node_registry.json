@@ -1,0 +1,57 @@
+[
+  {
+    "canonical_name": "pressure",
+    "aliases": ["pressure", "압력", "p", "기압", "압력값"],
+    "related_nodes": ["force", "area", "temperature", "volume"]
+  },
+  {
+    "canonical_name": "force",
+    "aliases": ["force", "힘", "f", "작용력", "하중"],
+    "related_nodes": ["pressure", "work", "power"]
+  },
+  {
+    "canonical_name": "area",
+    "aliases": ["area", "면적", "a", "단면적", "넓이", "바늘", "판", "넓은 판"],
+    "related_nodes": ["pressure", "volume"]
+  },
+  {
+    "canonical_name": "temperature",
+    "aliases": ["temperature", "온도", "t", "열도", "기온"],
+    "related_nodes": ["heat", "pressure", "efficiency"]
+  },
+  {
+    "canonical_name": "heat",
+    "aliases": ["heat", "열", "q", "열량", "가열"],
+    "related_nodes": ["temperature", "energy", "efficiency"]
+  },
+  {
+    "canonical_name": "energy",
+    "aliases": ["energy", "에너지", "e", "총에너지"],
+    "related_nodes": ["heat", "work", "efficiency", "power"]
+  },
+  {
+    "canonical_name": "work",
+    "aliases": ["work", "일", "w", "일량"],
+    "related_nodes": ["force", "energy", "power"]
+  },
+  {
+    "canonical_name": "efficiency",
+    "aliases": ["efficiency", "효율", "성능비", "효율값", "열효율"],
+    "related_nodes": ["energy", "heat", "power"]
+  },
+  {
+    "canonical_name": "power",
+    "aliases": ["power", "동력", "출력", "파워"],
+    "related_nodes": ["work", "energy", "efficiency"]
+  },
+  {
+    "canonical_name": "volume",
+    "aliases": ["volume", "체적", "부피", "v", "용적"],
+    "related_nodes": ["pressure", "area", "temperature"]
+  },
+  {
+    "canonical_name": "number",
+    "aliases": ["number", "수", "숫자"],
+    "related_nodes": []
+  }
+]

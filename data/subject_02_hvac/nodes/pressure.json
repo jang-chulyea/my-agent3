@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "node_id": "TD-01-PRESSURE",
+  "subject_id": "subject_02_hvac",
+  "title": "압력",
+  "category": "concept",
+  "difficulty": {
+    "exam_level": 1,
+    "learner_level": "beginner"
+  },
+  "status": "active",
+  "aliases": ["pressure", "압력", "절대압력", "게이지압력"],
+  "tags": ["열역학", "유체", "공조냉동"],
+  "definition": {
+    "short": "압력은 단위 면적당 작용하는 힘이다.",
+    "full": "압력은 어떤 면에 수직 방향으로 작용하는 힘을 그 면적으로 나눈 물리량이다."
+  },
+  "core_question": "왜 같은 힘이어도 더 세게 눌리거나 덜 눌리는가?",
+  "prerequisites": ["TD-00-FORCE", "TD-00-AREA"],
+  "related_nodes": ["TD-02-TEMPERATURE", "TD-03-VOLUME"],
+  "level_content": {
+    "level_1_intuition": {
+      "title": "좁게 누르면 더 아프다",
+      "content": "같은 힘이라도 바늘처럼 좁은 면에 작용하면 더 세게 눌린다."
+    },
+    "level_2_principle": {
+      "title": "압력은 힘의 집중도다",
+      "content": "압력은 힘이 면적 위에 얼마나 집중되어 작용하는지를 나타낸다."
+    },
+    "level_3_formula": {
+      "title": "수식으로 보는 압력",
+      "content": "압력은 힘을 면적으로 나눈 값이다.",
+      "formulas": [
+        {
+          "formula_id": "F-PRESSURE-001",
+          "expression": "P = F / A",
+          "variables": {
+            "P": "압력",
+            "F": "힘",
+            "A": "면적"
+          },
+          "unit": "Pa",
+          "description": "압력의 기본 정의식"
+        }
+      ]
+    },
+    "level_4_practical": {
+      "title": "시험과 실무에서의 압력",
+      "content": "게이지압력과 절대압력을 구분하지 못하면 상태 해석이 틀어질 수 있다.",
+      "tips": ["압력 기준이 무엇인지 먼저 확인한다."],
+      "common_mistakes": ["게이지압력을 절대압력처럼 쓰는 실수"]
+    }
+  },
+  "formulas": [
+    {
+      "formula_id": "F-PRESSURE-001",
+      "expression": "P = F / A",
+      "variables": {
+        "P": "압력",
+        "F": "힘",
+        "A": "면적"
+      },
+      "unit": "Pa",
+      "description": "압력의 기본 정의식"
+    }
+  ],
+  "examples": [],
+  "history": {
+    "summary": "압력 개념은 유체 정역학과 기체 법칙의 발달과 함께 정교해졌다.",
+    "events": []
+  },
+  "media_refs": [],
+  "source_refs": [],
+  "retrieval_hints": {
+    "keywords": ["압력", "pressure", "절대압력", "게이지압력"],
+    "common_phrases": ["단위 면적당 힘", "압력계 지시값"],
+    "question_patterns": ["압력이란 무엇인가", "압력 계산 문제"]
+  },
+  "ui": {
+    "default_open_level": "level_1_intuition",
+    "accent_keywords": ["단위 면적당 힘", "절대압력", "게이지압력"]
+  },
+  "metadata": {
+    "created_at": "2026-04-09",
+    "updated_at": "2026-04-09",
+    "author": "OpenAI-ChatGPT"
+  }
+}

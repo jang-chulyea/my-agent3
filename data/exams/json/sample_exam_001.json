@@ -1,0 +1,17 @@
+{
+  "id": "sample_exam_001",
+  "subject": "physics",
+  "topic": "gas_pressure",
+  "question": "At constant volume, how does increasing temperature affect gas pressure?",
+  "question_type": "judgement",
+  "given": {
+    "volume": "constant",
+    "temperature": "increases"
+  },
+  "asked": "pressure change",
+  "concepts": [
+    "temperature",
+    "pressure",
+    "constant_volume"
+  ]
+}

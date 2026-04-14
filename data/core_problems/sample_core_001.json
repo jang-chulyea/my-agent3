@@ -1,0 +1,12 @@
+{
+  "id": "sample_core_001",
+  "subject": "physics",
+  "topic": "gas_pressure",
+  "question": "Predict pressure when gas temperature rises while volume stays constant.",
+  "concept_text": "For a fixed amount of gas at constant volume, pressure increases as temperature increases.",
+  "concepts": [
+    "temperature",
+    "pressure",
+    "constant_volume"
+  ]
+}

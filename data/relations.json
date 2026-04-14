@@ -1,0 +1,11 @@
+{
+  "temperature": {
+    "increase": [
+      {"target": "pressure", "condition": "constant_volume", "text": "온도 ↑ → 압력 ↑"},
+      {"target": "volume", "text": "온도 ↑ → 부피 ↑"}
+    ]
+  },
+  "pressure": {
+    "increase": [{"target": "boiling_point", "text": "압력 ↑ → 끓는점 ↑"}]
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "exam-001",
+  "subject": "basic_math",
+  "topic": "area",
+  "question": "A rectangle has a length of 8 m and a width of 3 m. What is its area?",
+  "question_type": "calculation",
+  "given": {
+    "length": 8,
+    "width": 3,
+    "unit": "m"
+  },
+  "asked": "area",
+  "concepts": [
+    "rectangle",
+    "area",
+    "multiplication"
+  ]
+}

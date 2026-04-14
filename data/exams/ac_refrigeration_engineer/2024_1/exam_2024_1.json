@@ -1,0 +1,120 @@
+{
+  "exam_info": {
+    "license": "ac_refrigeration_engineer",
+    "year": 2024,
+    "round": 1,
+    "title": "AC Refrigeration Engineer 2024 Round 1",
+    "source_file": "source.pdf",
+    "language": "ko",
+    "version": "1.0"
+  },
+  "problems": [
+    {
+      "problem_id": "2024_1_001",
+      "problem_no": 1,
+      "module": "exam",
+      "major_subject": "공조냉동설계",
+      "minor_subject": "thermodynamics",
+      "topic": "열역학 제2법칙",
+      "tags": [
+        "thermodynamics",
+        "second_law",
+        "heat_engine",
+        "efficiency"
+      ],
+      "question": "열기관 효율에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": "A",
+      "explanation": "테스트용"
+    },
+    {
+      "problem_id": "2024_1_002",
+      "problem_no": 2,
+      "module": "exam",
+      "major_subject": "공조냉동설계",
+      "minor_subject": "refrigeration_cycle",
+      "topic": "냉동사이클",
+      "tags": [
+        "refrigeration_cycle",
+        "compressor"
+      ],
+      "question": "냉동사이클에서 압축기의 역할로 옳은 것은?",
+      "choices": [
+        "냉매 증기를 압축하여 압력과 온도를 높인다",
+        "냉매의 압력을 낮춘다",
+        "냉각 대상에서 열을 흡수한다",
+        "외부로 열을 방출한다"
+      ],
+      "answer": "냉매 증기를 압축하여 압력과 온도를 높인다",
+      "explanation": "압축기는 저압 냉매 증기를 고압 고온 상태로 압축하는 장치이다."
+    },
+    {
+      "problem_id": "2024_1_003",
+      "problem_no": 3,
+      "module": "core",
+      "major_subject": "공조냉동설계",
+      "minor_subject": "thermodynamics",
+      "topic": "열역학 제1법칙",
+      "tags": [
+        "thermodynamics",
+        "energy_balance"
+      ],
+      "question": "밀폐계에서 내부에너지 변화와 열 및 일의 관계를 묻는 테스트 문제이다.",
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": "A",
+      "explanation": "테스트용 핵심 문제"
+    },
+    {
+      "problem_id": "2024_1_004",
+      "problem_no": 4,
+      "module": "exam",
+      "major_subject": "공조냉동설계",
+      "minor_subject": "refrigeration_cycle",
+      "topic": "팽창밸브",
+      "tags": [
+        "refrigeration_cycle",
+        "expansion_valve"
+      ],
+      "question": "냉동사이클에서 팽창밸브의 역할을 묻는 테스트 문제이다.",
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": "B",
+      "explanation": "테스트용 시험 문제"
+    },
+    {
+      "problem_id": "2024_1_005",
+      "problem_no": 5,
+      "module": "core",
+      "major_subject": "공조냉동설계",
+      "minor_subject": "refrigeration_cycle",
+      "topic": "증발기",
+      "tags": [
+        "refrigeration_cycle",
+        "evaporator"
+      ],
+      "question": "냉동사이클에서 증발기의 역할을 묻는 테스트 문제이다.",
+      "choices": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "answer": "C",
+      "explanation": "테스트용 핵심 문제"
+    }
+  ]
+}

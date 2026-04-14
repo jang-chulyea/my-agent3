@@ -1,0 +1,8 @@
+{
+  "query": "How do I calculate the area of a rectangle?",
+  "filters": {
+    "subject": "basic_math",
+    "topic": "area",
+    "question_type": "calculation"
+  }
+}

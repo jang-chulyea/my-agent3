@@ -1,0 +1,12 @@
+{
+  "id": "sample_subject_001",
+  "subject": "physics",
+  "topic": "gas_pressure",
+  "concept_text": "Gas pressure is related to temperature and volume. At constant volume, higher temperature usually means higher pressure.",
+  "concepts": [
+    "gas",
+    "temperature",
+    "pressure",
+    "constant_volume"
+  ]
+}

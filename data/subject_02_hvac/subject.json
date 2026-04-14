@@ -1,0 +1,35 @@
+{
+  "subject_id": "subject_02_hvac",
+  "subject_code": "HVAC",
+  "title": "공조냉동설계",
+  "description": "공조냉동기계기사 학습을 위한 공조냉동설계 과목 지식 그래프",
+  "language": "ko",
+  "version": "1.0",
+  "status": "active",
+  "exam_type": "공조냉동기계기사",
+  "domain": [
+    "공조",
+    "냉동",
+    "열역학",
+    "유체",
+    "설비"
+  ],
+  "entry_nodes": [
+    "TD-01-PRESSURE"
+  ],
+  "node_folder": "nodes",
+  "relation_folder": "relations",
+  "default_relation_files": [
+    "prerequisite_edges.json"
+  ],
+  "ui": {
+    "display_name": "공조냉동설계",
+    "default_entry_node": "TD-01-PRESSURE",
+    "theme_color": "blue"
+  },
+  "metadata": {
+    "created_at": "2026-04-09",
+    "updated_at": "2026-04-09",
+    "author": "OpenAI-ChatGPT"
+  }
+}

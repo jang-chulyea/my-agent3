@@ -1,0 +1,29 @@
+{
+  "id": "sample_lecture_material_001",
+  "subject": "physics",
+  "topic": "gas_pressure",
+  "title": "Constant Volume Gas Pressure",
+  "concepts": [
+    "temperature",
+    "pressure",
+    "constant_volume"
+  ],
+  "summary": "Reference material for explaining pressure changes when gas temperature rises at constant volume.",
+  "lecture_text": "When volume is fixed, increasing gas temperature makes particles move faster. Faster particles collide with the container walls more often and with greater force, so pressure increases.",
+  "visual_hints": [
+    "Draw a rigid container before and after heating.",
+    "Use longer motion arrows for hotter gas particles."
+  ],
+  "examples": [
+    {
+      "question": "A sealed rigid tank is heated. What happens to pressure?",
+      "answer": "The pressure increases."
+    }
+  ],
+  "tags": [
+    "gas_law",
+    "pressure",
+    "temperature",
+    "constant_volume"
+  ]
+}

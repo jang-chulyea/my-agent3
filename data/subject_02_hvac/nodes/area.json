@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "node_id": "TD-00-AREA",
+  "subject_id": "subject_02_hvac",
+  "title": "면적",
+  "category": "concept",
+  "difficulty": {
+    "exam_level": 1,
+    "learner_level": "beginner"
+  },
+  "status": "active",
+  "aliases": ["area", "면적", "단면적"],
+  "tags": ["기초수학", "기초물리"],
+  "definition": {
+    "short": "면적은 어떤 평면이 차지하는 크기이다.",
+    "full": "면적은 평면 위에서 어떤 도형이 차지하는 넓이의 크기이다."
+  },
+  "core_question": "어떤 작용이 퍼지는 공간의 넓이는 얼마나 되는가?",
+  "prerequisites": [],
+  "related_nodes": ["TD-00-FORCE", "TD-01-PRESSURE"],
+  "level_content": {
+    "level_1_intuition": {
+      "title": "넓게 퍼질수록 부담이 줄어든다",
+      "content": "같은 무게라도 넓은 판 위에 두면 덜 눌린다."
+    },
+    "level_2_principle": {
+      "title": "면적은 분산의 기준이다",
+      "content": "면적은 힘이나 열이 얼마나 넓게 퍼지는지 보여준다."
+    },
+    "level_3_formula": {
+      "title": "수식에서의 면적",
+      "content": "압력 공식 P = F/A에서 면적은 분모가 된다.",
+      "formulas": [
+        {
+          "formula_id": "F-AREA-001",
+          "expression": "A = width × length",
+          "variables": {
+            "A": "면적",
+            "width": "가로 길이",
+            "length": "세로 길이"
+          },
+          "unit": "m²",
+          "description": "직사각형 면적 계산식"
+        }
+      ]
+    },
+    "level_4_practical": {
+      "title": "시험과 실무에서의 면적",
+      "content": "압력 계산에서는 면적 단위 변환이 매우 중요하다.",
+      "tips": ["면적은 m²로 맞춘다."],
+      "common_mistakes": ["cm²를 그대로 쓰는 실수"]
+    }
+  },
+  "formulas": [
+    {
+      "formula_id": "F-AREA-001",
+      "expression": "A = width × length",
+      "variables": {
+        "A": "면적",
+        "width": "가로 길이",
+        "length": "세로 길이"
+      },
+      "unit": "m²",
+      "description": "직사각형 면적 계산식"
+    }
+  ],
+  "examples": [],
+  "history": {
+    "summary": "면적은 기하학에서 출발해 공학 해석의 기본 기준량이 되었다.",
+    "events": []
+  },
+  "media_refs": [],
+  "source_refs": [],
+  "retrieval_hints": {
+    "keywords": ["면적", "area", "단면적"],
+    "common_phrases": ["단위 면적당", "접촉 면적"],
+    "question_patterns": ["면적이란 무엇인가"]
+  },
+  "ui": {
+    "default_open_level": "level_1_intuition",
+    "accent_keywords": ["면적", "단면적"]
+  },
+  "metadata": {
+    "created_at": "2026-04-09",
+    "updated_at": "2026-04-09",
+    "author": "OpenAI-ChatGPT"
+  }
+}

@@ -1,0 +1,22 @@
+[
+  {
+    "edge_id": "PRE-0001",
+    "source_node_id": "TD-00-FORCE",
+    "target_node_id": "TD-01-PRESSURE",
+    "relation": "prerequisite",
+    "strength": "strong",
+    "reason": "압력은 단위 면적당 작용하는 힘이므로, 힘 개념이 먼저 이해되어야 한다.",
+    "order": 1,
+    "status": "active"
+  },
+  {
+    "edge_id": "PRE-0002",
+    "source_node_id": "TD-00-AREA",
+    "target_node_id": "TD-01-PRESSURE",
+    "relation": "prerequisite",
+    "strength": "strong",
+    "reason": "압력은 힘이 어느 면적에 분산되는가를 나타내므로, 면적 개념이 먼저 이해되어야 한다.",
+    "order": 2,
+    "status": "active"
+  }
+]
