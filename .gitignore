@@ -34,3 +34,10 @@ dist/
 Thumbs.db
 .vscode/
 .idea/
+# exam data (MVP 단계 제외)
+data/exams/
+
+# images (테스트용)
+*.png
+*.jpg
+*.jpeg

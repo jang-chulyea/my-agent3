@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My_Agent 3.0 - 일반 모드 / 전체화면 모드</title>
+  <style>
+    :root {
+      --bg: #f4f6fa;
+      --panel: rgba(255, 255, 255, 0.86);
+      --panel-solid: #ffffff;
+      --line: #e7ebf2;
+      --line-strong: #d8dfeb;
+      --text: #121826;
+      --sub: #5f6b7d;
+      --muted: #8b96a8;
+      --blue: #2563eb;
+      --blue-soft: #eef4ff;
+      --green: #0f9f6e;
+      --green-soft: #eef8f3;
+      --shadow: 0 12px 30px rgba(17, 24, 39, 0.08);
+      --shadow-soft: 0 6px 18px rgba(17, 24, 39, 0.05);
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
+        Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--text);
+      background: radial-gradient(circle at top left, #ffffff 0%, #f5f7fb 34%, #eef2f8 100%);
+    }
+
+    body { overflow: auto; }
+
+    .app {
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 40% 60%;
+      gap: 18px;
+      min-height: calc(100vh - 36px);
+      transition: grid-template-columns 0.28s ease, gap 0.28s ease;
+    }
+
+    .app-shell.mode-left {
+      grid-template-columns: 100% 0%;
+      gap: 0;
+    }
+
+    .app-shell.mode-right {
+      grid-template-columns: 0% 100%;
+      gap: 0;
+    }
+
+    .panel {
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.75);
+      box-shadow: var(--shadow);
+      border-radius: 28px;
+      overflow: hidden;
+      min-width: 0;
+      min-height: calc(100vh - 36px);
+      transition: opacity 0.22s ease, transform 0.22s ease, min-height 0.22s ease;
+    }
+
+    .app-shell.mode-left .practice-panel,
+    .app-shell.mode-right .left-panel {
+      opacity: 0;
+      transform: scale(0.98);
+      pointer-events: none;
+      min-height: 0;
+    }
+
+    .left-panel {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      height: 100%;
+    }
+
+    .nav-rail {
+      background: linear-gradient(180deg, #fbfcff 0%, #f2f5fb 100%);
+      border-right: 1px solid var(--line);
+      padding: 22px 14px 18px;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .brand { margin-bottom: 18px; }
+
+    .brand .eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .brand .title {
+      font-size: 20px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .breadcrumb-box,
+    .status-card,
+    .mode-guide {
+      padding: 12px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f7f9fd 100%);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .breadcrumb-box { margin-bottom: 14px; }
+    .mode-guide { margin-bottom: 16px; }
+
+    .breadcrumb-label,
+    .guide-label,
+    .nav-label {
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+      margin-bottom: 6px;
+    }
+
+    .breadcrumb,
+    .guide-text {
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--sub);
+      font-weight: 700;
+    }
+
+    .breadcrumb strong { color: var(--text); }
+
+    .nav-section {
+      margin-bottom: 14px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-label {
+      font-size: 11px;
+      padding: 0 2px;
+      margin-bottom: 10px;
+      letter-spacing: 0.14em;
+    }
+
+    .tree-list { display: grid; gap: 8px; }
+
+    .tree-group {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);
+      overflow: hidden;
+    }
+
+    .tree-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tree-group.open .tree-toggle {
+      background: linear-gradient(180deg, #f8fbff 0%, #f3f7ff 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tree-arrow {
+      width: 16px;
+      text-align: center;
+      color: var(--muted);
+      transition: transform 0.18s ease;
+    }
+
+    .tree-group.open .tree-arrow {
+      transform: rotate(90deg);
+      color: #3b5fc9;
+    }
+
+    .tree-title { flex: 1; }
+
+    .tree-content {
+      display: none;
+      padding: 8px;
+      background: linear-gradient(180deg, #fcfdff 0%, #f7f9fc 100%);
+    }
+
+    .tree-group.open .tree-content { display: block; }
+
+    .subject-list { display: grid; gap: 4px; }
+
+    .subject-item {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 10px 10px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--sub);
+      border: 1px solid transparent;
+      background: transparent;
+    }
+
+    .subject-item.active {
+      background: linear-gradient(180deg, #eef4ff 0%, #e8f0ff 100%);
+      border-color: #d8e5ff;
+      color: #133ea8;
+      font-weight: 800;
+    }
+
+    .subject-item.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 4px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #5b8cff 0%, #2563eb 100%);
+    }
+
+    .subject-no {
+      min-width: 20px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-align: right;
+    }
+
+    .nav-footer {
+      margin-top: auto;
+      display: grid;
+      gap: 10px;
+    }
+
+    .status-badge,
+    .mode-badge,
+    .state-pill,
+    .mini-chip,
+    .ref-badge,
+    .tag,
+    .tiny-pill,
+    .filter-chip,
+    .section-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+
+    .status-badge {
+      color: #23408f;
+      background: #edf3ff;
+      border-color: #d7e5ff;
+      margin-bottom: 10px;
+    }
+
+    .state-pill {
+      color: #2050c9;
+      background: #f5f8ff;
+      border-color: #dce7ff;
+    }
+
+    .status-row {
+      font-size: 12px;
+      color: var(--sub);
+      margin-bottom: 5px;
+      line-height: 1.5;
+    }
+
+    .learning-panel,
+    .practice-panel {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.76) 0%, rgba(255,255,255,0.90) 100%);
+    }
+
+    .learning-scroll,
+    .practice-scroll {
+      overflow: auto;
+      padding: 20px;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .learning-scroll::-webkit-scrollbar,
+    .practice-scroll::-webkit-scrollbar,
+    .modal-dialog::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    .learning-scroll::-webkit-scrollbar-thumb,
+    .practice-scroll::-webkit-scrollbar-thumb,
+    .modal-dialog::-webkit-scrollbar-thumb {
+      background: #dbe2ef;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+
+    .panel-modebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .modebar-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .modebar-title {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .modebar-sub {
+      font-size: 12px;
+      color: var(--sub);
+      font-weight: 600;
+    }
+
+    .modebar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      transition: 0.18s ease;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      font-family: inherit;
+    }
+
+    .primary-btn,
+    .ghost-btn,
+    .soft-btn,
+    .view-btn,
+    .mode-btn,
+    .return-btn,
+    .section-toggle {
+      border-radius: 12px;
+      padding: 10px 14px;
+    }
+
+    .primary-btn {
+      background: linear-gradient(180deg, #2f6df6 0%, #215ae0 100%);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .ghost-btn,
+    .view-btn,
+    .mode-btn {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .soft-btn {
+      background: #f5f8ff;
+      color: #2050c9;
+      border: 1px solid #dce7ff;
+    }
+
+    .return-btn {
+      background: #fff8e8;
+      color: #8a5a00;
+      border: 1px solid #f2deb0;
+      display: none;
+    }
+
+    .app-shell.mode-left .left-return,
+    .app-shell.mode-right .right-return {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .subject-hero,
+    .section-card,
+    .list-wrap,
+    .solution-wrap,
+    .mode-summary {
+      background: var(--panel-solid);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .subject-hero {
+      padding: 22px;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, rgba(245,248,255,0.95) 0%, rgba(255,255,255,0.96) 55%, rgba(247,249,253,0.95) 100%);
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .hero-top h1,
+    .practice-header h2 {
+      margin: 0;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-top h1 { font-size: 30px; }
+    .practice-header h2 { font-size: 28px; }
+
+    .hero-top p,
+    .practice-header p,
+    .section-caption,
+    .upload-desc,
+    .mode-summary p {
+      margin: 8px 0 0;
+      color: var(--sub);
+      line-height: 1.65;
+      font-size: 14px;
+    }
+
+    .hero-chip {
+      white-space: nowrap;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1px solid var(--line);
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .hero-metrics,
+    .grid-3,
+    .grid-4,
+    .lecture-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .lecture-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .metric,
+    .mini-card,
+    .concept-card,
+    .lecture-card,
+    .flow-item,
+    .solution-card,
+    .preview-box,
+    .modal-card,
+    .problem-card,
+    .question-box {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+    }
+
+    .metric,
+    .mini-card,
+    .concept-card,
+    .lecture-card,
+    .solution-card,
+    .modal-card,
+    .question-box {
+      padding: 14px;
+    }
+
+    .metric .k,
+    .mini-label {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .metric .v {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .section-card {
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .section-head,
+    .panel-title-row,
+    .lecture-top,
+    .question-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-title,
+    .panel-title-row h3,
+    .lecture-top h3,
+    .question-head h4 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .section-caption {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .intro-card {
+      padding: 16px;
+      background: linear-gradient(180deg, #fcfdff 0%, #f7f9fc 100%);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      color: var(--sub);
+      line-height: 1.75;
+      font-size: 14px;
+    }
+
+    .mini-card h4,
+    .concept-card h4,
+    .lecture-card h4,
+    .solution-card h5,
+    .modal-card h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .mini-card p,
+    .concept-card p,
+    .lecture-card p,
+    .solution-card p,
+    .solution-card li,
+    .modal-card p,
+    .modal-card li,
+    .question-box p,
+    .mode-summary p {
+      margin: 0;
+      color: var(--sub);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+
+    .concept-tag,
+    .section-chip {
+      display: inline-block;
+      margin-bottom: 10px;
+      background: #f4f7ff;
+      color: #2955d9;
+      border-color: #dce7ff;
+    }
+
+    .flow-list,
+    .solution-sections,
+    .modal-sections,
+    .problems {
+      display: grid;
+      gap: 12px;
+    }
+
+    .flow-item {
+      position: relative;
+      padding: 14px 16px 14px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .flow-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 12px;
+      bottom: 12px;
+      width: 4px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #93c5fd 0%, #2563eb 100%);
+    }
+
+    .flow-main {
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .flow-sub {
+      margin-top: 4px;
+      color: var(--sub);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 10px;
+      background: #f6f8fb;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+    }
+
+    .section-body.collapsed { display: none; }
+
+    .practice-header { margin-bottom: 16px; }
+
+    .filter-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .filter-chip {
+      background: #fff;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    .filter-chip.active {
+      background: #eef4ff;
+      color: #1e4fcd;
+      border-color: #d9e5ff;
+    }
+
+    .mode-summary {
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .app-shell.mode-left .left-summary,
+    .app-shell.mode-right .right-summary {
+      display: block;
+    }
+
+    .practice-grid {
+      display: grid;
+      grid-template-columns: 44% 56%;
+      gap: 16px;
+      min-height: 540px;
+      padding-bottom: 140px;
+    }
+
+    .problem-list,
+    .solution-panel {
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .list-wrap,
+    .solution-wrap {
+      padding: 16px;
+      height: 100%;
+    }
+
+    .panel-title-row span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .problem-card {
+      padding: 14px;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+      cursor: pointer;
+    }
+
+    .problem-card:hover {
+      transform: translateY(-1px);
+      border-color: #d5def0;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .problem-card.active {
+      border-color: #cfe0ff;
+      background: linear-gradient(180deg, #f6f9ff 0%, #eef4ff 100%);
+      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.08);
+    }
+
+    .problem-top,
+    .problem-footer,
+    .solution-badges,
+    .upload-actions,
+    .related-tags,
+    .lecture-meta,
+    .file-badges {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .problem-no {
+      font-size: 12px;
+      font-weight: 800;
+      color: #2049b8;
+      letter-spacing: 0.02em;
+    }
+
+    .difficulty {
+      font-size: 12px;
+      font-weight: 800;
+      color: #c46a00;
+      background: #fff6ea;
+      border: 1px solid #fde4bc;
+      padding: 5px 8px;
+      border-radius: 999px;
+    }
+
+    .problem-title {
+      margin: 0 0 10px;
+      font-size: 15px;
+      line-height: 1.5;
+      letter-spacing: -0.02em;
+    }
+
+    .problem-summary,
+    .meta-line,
+    .question-type {
+      color: var(--sub);
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .question-type {
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .question-box {
+      margin-bottom: 12px;
+      background: linear-gradient(180deg, #f9fbff 0%, #ffffff 100%);
+    }
+
+    .question-origin {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .solution-hero {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .solution-hero h4 {
+      margin: 8px 0 10px;
+      font-size: 18px;
+      line-height: 1.45;
+      letter-spacing: -0.03em;
+    }
+
+    .mode-badge {
+      background: #eef6ff;
+      border-color: #d9e9ff;
+      color: #1e54d1;
+    }
+
+    .ref-badge,
+    .tiny-pill,
+    .tag {
+      background: #f7f9fc;
+      color: var(--sub);
+    }
+
+    .answer-box {
+      border-radius: 14px;
+      padding: 14px;
+      background: linear-gradient(180deg, #eef7f2 0%, #f7fcf9 100%);
+      border: 1px solid #cfe9db;
+    }
+
+    .answer-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #0b7a53;
+      font-size: 13px;
+    }
+
+    .answer-box p {
+      color: #20664f;
+      font-weight: 700;
+    }
+
+    .solution-card ol,
+    .modal-card ol {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .upload-sticky {
+      position: sticky;
+      bottom: 0;
+      margin-top: -110px;
+      z-index: 6;
+      padding-top: 24px;
+      pointer-events: none;
+    }
+
+    .upload-box {
+      pointer-events: auto;
+      border-radius: 22px;
+      border: 1px solid rgba(220, 229, 244, 0.9);
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 18px 30px rgba(17, 24, 39, 0.10);
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+    }
+
+    .upload-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .file-preview {
+      padding: 12px 14px;
+      border: 1px dashed #cfd8ea;
+      border-radius: 14px;
+      background: #fafcff;
+      color: var(--sub);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .upload-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      place-items: center;
+      z-index: 40;
+    }
+
+    .modal.open { display: grid; }
+
+    .modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(10, 15, 25, 0.42);
+      backdrop-filter: blur(6px);
+    }
+
+    .modal-dialog {
+      position: relative;
+      width: min(920px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      overflow: auto;
+      border-radius: 28px;
+      background: #ffffff;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 28px 60px rgba(17, 24, 39, 0.20);
+      padding: 22px;
+    }
+
+    .modal-head,
+    .modal-footer {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .modal-head { margin-bottom: 16px; }
+    .modal-footer {
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: -0.04em;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 16px;
+    }
+
+    .preview-box {
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .preview-paper {
+      flex: 1;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px dashed #ccd6e7;
+      padding: 14px;
+      color: #3b4658;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .preview-label {
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1440px) {
+      .left-panel { grid-template-columns: 182px 1fr; }
+    }
+
+    @media (max-width: 1280px) {
+      .app-shell,
+      .app-shell.mode-left,
+      .app-shell.mode-right {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .panel { min-height: 720px; }
+
+      .practice-grid,
+      .modal-grid,
+      .upload-box,
+      .grid-3,
+      .hero-metrics,
+      .lecture-grid,
+      .grid-4 {
+        grid-template-columns: 1fr;
+      }
+
+      .app-shell.mode-left .practice-panel,
+      .app-shell.mode-right .left-panel {
+        display: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .app { padding: 12px; }
+      .left-panel { grid-template-columns: 150px 1fr; }
+      .panel-modebar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .modebar-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .upload-sticky { margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="app-shell" id="appShell">
+      <!-- LEFT PANEL -->
+      <section class="panel left-panel">
+        <aside class="nav-rail">
+          <div class="brand">
+            <div class="eyebrow">Learning Suite</div>
+            <div class="title">My_Agent 3.0</div>
+          </div>
+
+          <div class="breadcrumb-box">
+            <div class="breadcrumb-label">Current Path</div>
+            <div class="breadcrumb">공조냉동설계 &gt; <strong>열역학의 법칙</strong></div>
+          </div>
+
+          <div class="mode-guide">
+            <div class="guide-label">View Mode</div>
+            <div class="guide-text">
+              일반 모드에서는 학습과 문제풀이를 함께 보고, 확대 모드에서는 한쪽 영역에 집중합니다.
+            </div>
+          </div>
+
+          <div class="nav-section">
+            <div class="nav-label">공조냉동기계기사</div>
+
+            <div class="tree-list">
+              <div class="tree-group open">
+                <button class="tree-toggle" type="button">
+                  <span class="tree-arrow">▶</span>
+                  <span class="tree-title">공조냉동설계</span>
+                </button>
+                <div class="tree-content">
+                  <div class="subject-list">
+                    <div class="subject-item"><span class="subject-no">1.</span><span>냉동이론</span></div>
+                    <div class="subject-item"><span class="subject-no">2.</span><span>냉동장치의 구조</span></div>
+                    <div class="subject-item"><span class="subject-no">3.</span><span>압축기</span></div>
+                    <div class="subject-item"><span class="subject-no">4.</span><span>응축기</span></div>
+                    <div class="subject-item"><span class="subject-no">5.</span><span>팽창장치</span></div>
+                    <div class="subject-item"><span class="subject-no">6.</span><span>증발기</span></div>
+                    <div class="subject-item"><span class="subject-no">7.</span><span>냉매</span></div>
+                    <div class="subject-item"><span class="subject-no">8.</span><span>냉동사이클</span></div>
+                    <div class="subject-item active"><span class="subject-no">9.</span><span>열역학의 법칙</span></div>
+                    <div class="subject-item"><span class="subject-no">10.</span><span>열역학 상태량</span></div>
+                    <div class="subject-item"><span class="subject-no">11.</span><span>열역학의 응용</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tree-group">
+                <button class="tree-toggle" type="button">
+                  <span class="tree-arrow">▶</span>
+                  <span class="tree-title">에너지관리</span>
+                </button>
+                <div class="tree-content">
+                  <div class="subject-list">
+                    <div class="subject-item"><span class="subject-no">1.</span><span>보일러 개요</span></div>
+                    <div class="subject-item"><span class="subject-no">2.</span><span>열효율 관리</span></div>
+                    <div class="subject-item"><span class="subject-no">3.</span><span>배관 및 계측</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tree-group">
+                <button class="tree-toggle" type="button">
+                  <span class="tree-arrow">▶</span>
+                  <span class="tree-title">시운전 및 안전관리</span>
+                </button>
+                <div class="tree-content">
+                  <div class="subject-list">
+                    <div class="subject-item"><span class="subject-no">1.</span><span>시운전 절차</span></div>
+                    <div class="subject-item"><span class="subject-no">2.</span><span>안전기준</span></div>
+                    <div class="subject-item"><span class="subject-no">3.</span><span>이상상태 대응</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tree-group">
+                <button class="tree-toggle" type="button">
+                  <span class="tree-arrow">▶</span>
+                  <span class="tree-title">유지보수공사관리</span>
+                </button>
+                <div class="tree-content">
+                  <div class="subject-list">
+                    <div class="subject-item"><span class="subject-no">1.</span><span>정기점검</span></div>
+                    <div class="subject-item"><span class="subject-no">2.</span><span>보수 계획</span></div>
+                    <div class="subject-item"><span class="subject-no">3.</span><span>공사 품질관리</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav-footer">
+            <div class="status-card">
+              <div class="status-badge">● 학습 상태</div>
+              <div class="status-row">과정: <strong>공조냉동기계기사</strong></div>
+              <div class="status-row">과목: <strong>공조냉동설계</strong></div>
+              <div class="status-row">Subject: <strong>열역학의 법칙</strong></div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="learning-panel">
+          <div class="panel-modebar">
+            <div class="modebar-left">
+              <span class="state-pill">Learning Mode</span>
+              <div>
+                <div class="modebar-title">일반 모드 / 학습 전체화면 모드</div>
+                <div class="modebar-sub">
+                  개념, 인과관계, 강의 자료에 집중할 때 학습 패널 전체화면을 사용합니다.
+                </div>
+              </div>
+            </div>
+            <div class="modebar-actions">
+              <button class="mode-btn" id="leftExpandBtn" type="button">⛶ 학습 확대</button>
+              <button class="return-btn left-return" id="leftReturnBtn" type="button">← 분할 보기</button>
+            </div>
+          </div>
+
+          <div class="learning-scroll">
+            <div class="mode-summary left-summary">
+              <h3 style="margin:0 0 8px; font-size:18px; letter-spacing:-0.03em;">학습 전체화면 모드</h3>
+              <p>
+                이 모드에서는 좌측 학습 내용을 넓게 펼쳐서 읽습니다. 긴 설명, 기술사, 인과관계,
+                추천 강의를 끊김 없이 집중해서 볼 수 있습니다.
+              </p>
+            </div>
+
+            <section class="subject-hero">
+              <div class="hero-top">
+                <div>
+                  <h1>열역학의 법칙</h1>
+                  <p>
+                    열역학의 법칙은 에너지 보존과 변화 방향을 설명하는 핵심 토대입니다.
+                    냉동사이클, 압축기, 응축기, 열교환 해석 전반에서 필수적으로 연결되며,
+                    실제 설비의 효율과 손실을 해석하는 기준이 됩니다.
+                  </p>
+                </div>
+                <div class="hero-chip">Bundle Learning</div>
+              </div>
+
+              <div class="hero-metrics">
+                <div class="metric">
+                  <div class="k">현재 단원</div>
+                  <div class="v">제1·2법칙 중심</div>
+                </div>
+                <div class="metric">
+                  <div class="k">추천 문제</div>
+                  <div class="v">28 Sets</div>
+                </div>
+                <div class="metric">
+                  <div class="k">학습 흐름</div>
+                  <div class="v">개념 → 문제 → 해설</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <div class="section-head">
+                <div>
+                  <h3 class="section-title">과정소개</h3>
+                  <p class="section-caption">왜 열역학의 법칙을 먼저 이해해야 하는지에 대한 학습 진입 안내</p>
+                </div>
+                <span class="section-chip">Intro</span>
+              </div>
+              <div class="intro-card">
+                열역학의 법칙은 냉동·공조 시스템을 해석하는 가장 기본적인 프레임입니다.
+                제1법칙은 에너지 보존을, 제2법칙은 실제 과정의 방향성과 손실을 설명합니다.
+                따라서 압축기 동력, 열교환기 성능, 냉동사이클의 효율, 비가역 손실을 분석하려면
+                먼저 법칙의 의미를 구조적으로 이해해야 합니다.
+              </div>
+            </section>
+
+            <section class="section-card">
+              <div class="section-head">
+                <div>
+                  <h3 class="section-title">기술사</h3>
+                  <p class="section-caption">기본 모드에서는 접혀 있고, 필요할 때 펼쳐서 깊이 읽는 영역</p>
+                </div>
+                <button class="section-toggle soft-btn" type="button" data-target="historyBody">기술사 펼치기</button>
+              </div>
+
+              <div class="section-body collapsed" id="historyBody">
+                <div class="grid-3">
+                  <div class="mini-card">
+                    <div class="mini-label">왜 등장했는가</div>
+                    <h4>열기관 효율 해석의 필요</h4>
+                    <p>
+                      산업혁명 시기 증기기관의 효율을 높이기 위해, 열이 어떻게 일로 전환되는지
+                      설명할 수 있는 보편 법칙이 필요했습니다.
+                    </p>
+                  </div>
+
+                  <div class="mini-card">
+                    <div class="mini-label">어떤 문제에서 출발했는가</div>
+                    <h4>손실과 방향성의 해석</h4>
+                    <p>
+                      같은 열원을 사용해도 왜 어떤 장치는 높은 효율을 보이고 어떤 과정은 손실이 큰지
+                      해석할 기준이 요구되었습니다.
+                    </p>
+                  </div>
+
+                  <div class="mini-card">
+                    <div class="mini-label">어떻게 발전했는가</div>
+                    <h4>냉동·발전 사이클로 확장</h4>
+                    <p>
+                      열기관 해석에서 시작해 에너지 보존, 엔트로피, 비가역성, 냉동·발전 사이클 분석으로
+                      확장되며 현대 설비공학의 공통 원리가 되었습니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <div class="section-head">
+                <div>
+                  <h3 class="section-title">개념</h3>
+                  <p class="section-caption">직관 / 원리 / 수식 / 실무 관점으로 핵심 개념을 정리</p>
+                </div>
+                <span class="section-chip">Core Concepts</span>
+              </div>
+
+              <div class="grid-4">
+                <div class="concept-card">
+                  <span class="concept-tag">직관</span>
+                  <h4>에너지는 사라지지 않는다</h4>
+                  <p>
+                    계 내부의 변화는 열과 일의 출입으로 설명되며, 설비에서 발생하는 모든 변화는
+                    결국 에너지 수지로 환원됩니다.
+                  </p>
+                </div>
+
+                <div class="concept-card">
+                  <span class="concept-tag">원리</span>
+                  <h4>실제 과정은 방향성이 있다</h4>
+                  <p>
+                    열은 고온에서 저온으로 이동하고, 실제 시스템은 항상 비가역 손실을 수반합니다.
+                  </p>
+                </div>
+
+                <div class="concept-card">
+                  <span class="concept-tag">수식</span>
+                  <h4>에너지 수지와 상태량</h4>
+                  <p>
+                    닫힌계에서는 ΔU = Q - W, 개방계에서는 엔탈피 중심 방정식을 사용합니다.
+                    냉동장치 해석에서는 엔탈피가 더 실용적입니다.
+                  </p>
+                </div>
+
+                <div class="concept-card">
+                  <span class="concept-tag">실무</span>
+                  <h4>냉동사이클 해석의 기준</h4>
+                  <p>
+                    압축기 동력, 응축 열량, 증발 열량, 팽창 후 상태 해석은 모두 열역학 법칙 위에서
+                    정리됩니다.
+                  </p>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <div class="section-head">
+                <div>
+                  <h3 class="section-title">인과관계</h3>
+                  <p class="section-caption">핵심 개념의 연결을 흐름형으로 이해하는 영역</p>
+                </div>
+                <span class="section-chip">Cause & Effect</span>
+              </div>
+
+              <div class="flow-list">
+                <div class="flow-item">
+                  <div>
+                    <div class="flow-main">열 유입 → 내부에너지 증가</div>
+                    <div class="flow-sub">닫힌계에서 외부로 일이 크지 않다면 공급된 열은 내부 상태량 상승으로 연결됩니다.</div>
+                  </div>
+                  <div class="flow-arrow">ΔQ → ΔU</div>
+                </div>
+
+                <div class="flow-item">
+                  <div>
+                    <div class="flow-main">압축기 일 입력 → 엔탈피 상승</div>
+                    <div class="flow-sub">개방계 유동 장치에서는 축일 입력이 출구 엔탈피 증가로 직접 이어집니다.</div>
+                  </div>
+                  <div class="flow-arrow">Wₙ → h↑</div>
+                </div>
+
+                <div class="flow-item">
+                  <div>
+                    <div class="flow-main">온도차 존재 → 열전달 발생</div>
+                    <div class="flow-sub">제2법칙 관점에서 열은 고온부에서 저온부로 이동하며 방향성을 가집니다.</div>
+                  </div>
+                  <div class="flow-arrow">ΔT → Q</div>
+                </div>
+
+                <div class="flow-item">
+                  <div>
+                    <div class="flow-main">비가역 손실 증가 → 엔트로피 증가</div>
+                    <div class="flow-sub">마찰, 압력손실, 비이상 압축은 시스템의 유효에너지 활용도를 낮춥니다.</div>
+                  </div>
+                  <div class="flow-arrow">Loss ↑ → S ↑</div>
+                </div>
+              </div>
+            </section>
+
+            <section class="section-card">
+              <div class="lecture-top">
+                <div>
+                  <h3 class="section-title">강의</h3>
+                  <p class="section-caption">핵심 개념 복습과 문제풀이 연결을 위한 추천 학습 자료</p>
+                </div>
+                <button class="primary-btn" type="button">강의 보기</button>
+              </div>
+
+              <div class="lecture-grid">
+                <div class="lecture-card">
+                  <h4>AI 생성 강의</h4>
+                  <p>
+                    열역학 제1법칙과 제2법칙을 냉동장치 예시와 함께 압축적으로 정리한 빠른 복습형 강의입니다.
+                  </p>
+                  <div class="lecture-meta">
+                    <span class="tiny-pill">14분</span>
+                    <span class="tiny-pill">핵심 정리</span>
+                  </div>
+                </div>
+
+                <div class="lecture-card">
+                  <h4>YouTube 강의</h4>
+                  <p>
+                    경계일, 에너지 수지, 엔트로피 증가 문제를 실전 문제로 설명하는 응용형 문제풀이 강의입니다.
+                  </p>
+                  <div class="lecture-meta">
+                    <span class="tiny-pill">26분</span>
+                    <span class="tiny-pill">문제풀이</span>
+                  </div>
+                </div>
+
+                <div class="lecture-card">
+                  <h4>PDF 요약본</h4>
+                  <p>
+                    열역학 법칙, 상태량, 냉동사이클 핵심 포인트를 1회독 기준으로 압축한 정리 노트형 자료입니다.
+                  </p>
+                  <div class="lecture-meta">
+                    <span class="tiny-pill">7페이지</span>
+                    <span class="tiny-pill">요약본</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+        </main>
+      </section>
+      <!-- RIGHT PANEL -->
+      <section class="panel practice-panel">
+        <div class="panel-modebar">
+          <div class="modebar-left">
+            <span class="state-pill">Solve Mode</span>
+            <div>
+              <div class="modebar-title">일반 모드 / 문제풀이 전체화면 모드</div>
+              <div class="modebar-sub">
+                문제 리스트, 문제 원문, 해설, 업로드 문제 풀이에 집중할 때
+                문제풀이 패널 전체화면을 사용합니다.
+              </div>
+            </div>
+          </div>
+          <div class="modebar-actions">
+            <button class="mode-btn" id="rightExpandBtn" type="button">⛶ 문제풀이 확대</button>
+            <button class="return-btn right-return" id="rightReturnBtn" type="button">← 분할 보기</button>
+          </div>
+        </div>
+
+        <div class="practice-scroll">
+          <div class="mode-summary right-summary">
+            <h3 style="margin:0 0 8px; font-size:18px; letter-spacing:-0.03em;">문제풀이 전체화면 모드</h3>
+            <p>
+              이 모드에서는 문제 선택, 문제 원문, 해석, 풀이 과정, 정답,
+              관련 개념, 업로드 문제 풀이까지 한 흐름으로 집중해서 볼 수 있습니다.
+            </p>
+          </div>
+
+          <div class="practice-header">
+            <div>
+              <h2>핵심 문제</h2>
+              <p>
+                개념 이해와 기출 감각을 동시에 확인할 수 있도록 문제를 묶어 배치했습니다.
+                전체화면 모드에서는 문제 원문과 해설에 더 집중합니다.
+              </p>
+            </div>
+            <div class="filter-row" id="filterRow"></div>
+          </div>
+
+          <div class="practice-grid">
+            <div class="problem-list">
+              <div class="list-wrap">
+                <div class="panel-title-row">
+                  <h3>문제 리스트</h3>
+                  <span id="problemCount">5문제</span>
+                </div>
+                <div class="problems" id="problemList"></div>
+              </div>
+            </div>
+
+            <div class="solution-panel">
+              <div class="solution-wrap">
+                <div class="panel-title-row">
+                  <h3>선택 문제 해설</h3>
+                  <span>실전 해설 패널</span>
+                </div>
+
+                <div class="question-box">
+                  <div class="question-head">
+                    <h4>문제 원문</h4>
+                    <span class="question-origin" id="questionOrigin">기출/핵심문제 기반</span>
+                  </div>
+                  <p id="questionText">
+                    정압 과정에서 기체가 팽창할 때, 계가 한 일은 어떤 식으로 표현되는가?
+                  </p>
+                </div>
+
+                <div class="solution-hero">
+                  <div class="solution-badges">
+                    <span class="mode-badge" id="solveMode">Hybrid</span>
+                    <span class="ref-badge">핵심문제 참조</span>
+                    <span class="ref-badge">기출문제 참조</span>
+                  </div>
+                  <h4 id="solutionTitle">정압 팽창에서 계가 한 일은?</h4>
+                  <div class="meta-line" id="solutionMeta">
+                    문제 번호 01 · 난이도 ★★☆ · 태그: 열역학, 경계일, 정압과정
+                  </div>
+                </div>
+
+                <div class="solution-sections">
+                  <div class="solution-card">
+                    <h5>문제 해석</h5>
+                    <p id="solutionInterpret">
+                      정압 과정에서는 압력이 일정하므로, 계가 한 일은 압력과 체적 변화량의 곱으로
+                      정리할 수 있습니다. 즉 과정의 본질은 압력이 고정된 상태에서
+                      얼마나 체적이 늘어났는가를 읽는 것입니다.
+                    </p>
+                  </div>
+
+                  <div class="solution-card">
+                    <h5>풀이 과정</h5>
+                    <ol id="solutionSteps">
+                      <li>정압 조건이므로 P = constant임을 먼저 확인합니다.</li>
+                      <li>경계일 식 W = ∫P dV를 적용합니다.</li>
+                      <li>압력이 일정하므로 적분 결과는 W = P(V₂ - V₁)로 단순화됩니다.</li>
+                      <li>체적이 증가했다면 계가 외부에 한 일은 양(+)의 값으로 해석합니다.</li>
+                    </ol>
+                  </div>
+
+                  <div class="solution-card">
+                    <h5>정답</h5>
+                    <div class="answer-box">
+                      <strong>최종 답</strong>
+                      <p id="solutionAnswer">
+                        정압 팽창에서 계가 한 일은 W = P(V₂ - V₁) 입니다.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="solution-card">
+                    <h5>관련 개념</h5>
+                    <div class="related-tags" id="relatedConcepts">
+                      <span class="tag">열역학 제1법칙</span>
+                      <span class="tag">경계일</span>
+                      <span class="tag">정압과정</span>
+                      <span class="tag">P-V 선도</span>
+                    </div>
+                  </div>
+
+                  <div class="solution-card">
+                    <h5>추천 강의</h5>
+                    <p id="recommendLecture">
+                      정압/정적/등온/단열 과정 비교 강의를 먼저 본 뒤,
+                      P-V 선도에서 면적 해석 문제풀이 강의를 이어서 보면 흐름이 정리됩니다.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="upload-sticky">
+            <div class="upload-box">
+              <div>
+                <h3 class="upload-title">내 문제로 연습하기</h3>
+                <p class="upload-desc">
+                  문제를 업로드하여 풀이를 확인하세요. 지원 형식은 아래와 같으며,
+                  실제 연결 시 이 영역이 실행 진입점이 됩니다.
+                </p>
+                <div class="file-badges">
+                  <span class="tiny-pill">PDF</span>
+                  <span class="tiny-pill">PNG</span>
+                  <span class="tiny-pill">JPG</span>
+                  <span class="tiny-pill">TXT</span>
+                </div>
+              </div>
+
+              <div class="upload-side">
+                <div class="file-preview" id="filePreview">
+                  선택된 파일 없음<br />
+                  예시: thermo_exam_set_01.pdf
+                </div>
+                <div class="upload-actions">
+                  <button class="ghost-btn" type="button" id="mockUploadBtn">업로드 버튼</button>
+                  <button class="primary-btn" type="button" id="openModalBtn">풀이 시작 버튼</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="solveModal" aria-hidden="true">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <h3 id="modalTitle">업로드 문제 풀이</h3>
+          <p style="margin:8px 0 0; color:var(--sub); font-size:13px; line-height:1.6;">
+            사용자 업로드 문제를 풀이한 결과를 보여주는 시연용 모달입니다.
+            실제 연결 시 여기서 구조화 결과와 풀이 결과를 함께 보여줄 수 있습니다.
+          </p>
+        </div>
+        <button class="close-btn" type="button" id="closeModalTop" aria-label="닫기">×</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="preview-box">
+          <div class="preview-label">문제 미리보기</div>
+          <div class="preview-paper">
+            [열역학 업로드 문제 예시]<br /><br />
+            이상기체가 단열 압축될 때 외부에서 계에 일이 가해진다.<br />
+            이 과정에서 내부에너지와 온도는 어떻게 변화하는가?<br /><br />
+            조건:<br />
+            - 열출입 없음 (Q = 0)<br />
+            - 비가역 손실은 무시<br />
+            - 계는 닫힌계로 가정
+          </div>
+          <div class="solution-badges">
+            <span class="mode-badge">Hybrid</span>
+            <span class="ref-badge">업로드 문제</span>
+            <span class="ref-badge">LLM/규칙 기반 혼합</span>
+          </div>
+        </div>
+
+        <div class="modal-sections">
+          <div class="modal-card">
+            <h4>문제 해석</h4>
+            <p>
+              단열 압축은 열교환 없이 외부 일이 계 내부 에너지 상승으로 이어지는
+              전형적인 닫힌계 문제입니다. 따라서 제1법칙 관점에서 입력 일이
+              내부에너지 증가로 연결되는지를 우선 확인해야 합니다.
+            </p>
+          </div>
+
+          <div class="modal-card">
+            <h4>풀이 과정</h4>
+            <ol>
+              <li>단열 과정이므로 Q = 0 조건을 먼저 적용합니다.</li>
+              <li>닫힌계 제1법칙에서 ΔU = Q - W를 사용합니다.</li>
+              <li>압축은 외부가 계에 일을 하는 경우이므로, 계가 한 일 W는 음(-)의 방향으로 해석됩니다.</li>
+              <li>결과적으로 ΔU는 증가하며, 이상기체라면 내부에너지 증가와 온도 상승이 함께 나타납니다.</li>
+            </ol>
+          </div>
+
+          <div class="modal-card">
+            <h4>최종 답</h4>
+            <div class="answer-box">
+              <strong>정리</strong>
+              <p>
+                단열 압축에서는 <b>내부에너지 증가</b>, <b>온도 상승</b>으로
+                해석하는 것이 맞습니다.
+              </p>
+            </div>
+          </div>
+
+          <div class="modal-card">
+            <h4>관련 개념</h4>
+            <div class="related-tags">
+              <span class="tag">단열과정</span>
+              <span class="tag">닫힌계</span>
+              <span class="tag">내부에너지</span>
+              <span class="tag">이상기체</span>
+            </div>
+          </div>
+
+          <div class="modal-card">
+            <h4>추천 강의</h4>
+            <p>
+              단열 압축/팽창에서 부호 해석과 제1법칙 문제에서 일의 방향 판별 강의를 먼저 보면
+              유사 문제를 빠르게 정리할 수 있습니다.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="ghost-btn" type="button" id="closeModalBottom">닫기 버튼</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    /*
+    Disabled old mock-only script. The live /solve integration below keeps the
+    existing layout and reuses the same DOM ids.
+
+    const problems = [
+      {
+        id: 1,
+        no: "01",
+        type: "핵심문제",
+        mode: "Hybrid",
+        title: "정압 팽창에서 계가 한 일은?",
+        summary: "압력이 일정한 과정에서 경계일의 식을 묻는 기본 문제",
+        difficulty: "★★☆",
+        tags: ["열역학", "경계일", "정압과정"],
+        questionText: "정압 과정에서 기체가 팽창할 때, 계가 한 일은 어떤 식으로 표현되는가?",
+        interpret: "정압 과정에서는 압력이 일정하므로 W = P(V₂ - V₁) 형태로 정리된다.",
+        steps: [
+          "정압 조건 확인",
+          "W = ∫P dV 적용",
+          "상수 압력 → P(V₂ - V₁)",
+          "팽창이면 양(+)"
+        ],
+        answer: "W = P(V₂ - V₁)",
+        concepts: ["경계일", "정압과정"],
+        lecture: "정압 과정 강의 추천"
+      }
+    ];
+
+    const problemList = document.getElementById("problemList");
+    const questionText = document.getElementById("questionText");
+    const solutionAnswer = document.getElementById("solutionAnswer");
+
+    function renderProblems() {
+      problemList.innerHTML = problems.map(p => `
+        <div class="problem-card" data-id="${p.id}">
+          <h4>${p.title}</h4>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".problem-card").forEach(el => {
+        el.onclick = () => selectProblem(el.dataset.id);
+      });
+    }
+
+    function selectProblem(id) {
+      const p = problems.find(x => x.id == id);
+      questionText.innerText = p.questionText;
+      solutionAnswer.innerText = p.answer;
+    }
+
+    renderProblems();
+
+    // 전체화면 기능
+    const appShell = document.getElementById("appShell");
+
+    document.getElementById("leftExpandBtn").onclick = () => {
+      appShell.classList.add("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    document.getElementById("rightExpandBtn").onclick = () => {
+      appShell.classList.add("mode-right");
+      appShell.classList.remove("mode-left");
+    };
+
+    document.getElementById("leftReturnBtn").onclick =
+    document.getElementById("rightReturnBtn").onclick = () => {
+      appShell.classList.remove("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    // modal
+    const modal = document.getElementById("solveModal");
+
+    document.getElementById("openModalBtn").onclick = () => {
+      modal.classList.add("open");
+    };
+
+    document.getElementById("closeModalTop").onclick =
+    document.getElementById("closeModalBottom").onclick =
+    document.getElementById("modalBackdrop").onclick = () => {
+      modal.classList.remove("open");
+    };
+
+    */
+
+    /*
+    let problems = [];
+    let examInfo = {};
+    let selectedFile = null;
+
+    const problemList = document.getElementById("problemList");
+    const problemCount = document.getElementById("problemCount");
+    const filePreview = document.getElementById("filePreview");
+    const questionOrigin = document.getElementById("questionOrigin");
+    const questionText = document.getElementById("questionText");
+    const solutionTitle = document.getElementById("solutionTitle");
+    const solutionMeta = document.getElementById("solutionMeta");
+    const solutionInterpret = document.getElementById("solutionInterpret");
+    const solutionSteps = document.getElementById("solutionSteps");
+    const solutionAnswer = document.getElementById("solutionAnswer");
+    const relatedConcepts = document.getElementById("relatedConcepts");
+    const recommendLecture = document.getElementById("recommendLecture");
+    const mockUploadBtn = document.getElementById("mockUploadBtn");
+    const openModalBtn = document.getElementById("openModalBtn");
+
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".pdf,image/png,image/jpeg";
+    fileInput.style.display = "none";
+    document.body.appendChild(fileInput);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeProblem(problem, index) {
+      const tags = Array.isArray(problem.tags) ? problem.tags : [];
+      const choices = Array.isArray(problem.choices) ? problem.choices : [];
+
+      return {
+        id: problem.problem_id || `problem_${index + 1}`,
+        no: problem.problem_no ?? index + 1,
+        title: problem.question || `문제 ${index + 1}`,
+        question: problem.question || "",
+        choices,
+        answer: problem.answer || "",
+        explanation: problem.explanation || "",
+        tags,
+        visualRequired: Boolean(problem.visual_required),
+        solveStatus: problem.solve_status ?? "not_started",
+        ingestionStatus: problem.ingestion_status ?? "",
+        module: problem.module || "",
+        majorSubject: problem.major_subject || "",
+        minorSubject: problem.minor_subject || "",
+        topic: problem.topic || "",
+        reviewStatus: problem.review_status || ""
+      };
+    }
+
+    function renderProblems() {
+      problemCount.innerText = `${problems.length}문제`;
+
+      if (!problems.length) {
+        problemList.innerHTML = `
+          <div class="problem-card">
+            <div class="problem-title">업로드한 파일의 분석 결과가 여기에 표시됩니다.</div>
+            <div class="problem-summary">PDF, PNG, JPG 파일을 선택한 뒤 풀이 시작 버튼을 눌러주세요.</div>
+          </div>
+        `;
+        return;
+      }
+
+      problemList.innerHTML = problems.map((p, index) => `
+        <div class="problem-card ${index === 0 ? "active" : ""}" data-id="${escapeHtml(p.id)}" style="${p.solveStatus === "skipped_visual" ? "opacity:0.55;filter:grayscale(1);" : ""}">
+          <div class="problem-top">
+            <span class="problem-no">문제 ${escapeHtml(p.no)}</span>
+            ${p.visualRequired ? '<span class="difficulty">시각 요소 포함</span>' : '<span class="difficulty">텍스트</span>'}
+          </div>
+          <h4 class="problem-title">${escapeHtml(p.title)}</h4>
+          <div class="problem-summary">${escapeHtml(p.explanation || "해설 없음")}</div>
+          <div class="problem-footer">
+            ${p.tags.slice(0, 3).map(tag => `<span class="tiny-pill">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".problem-card[data-id]").forEach(el => {
+        el.onclick = () => selectProblem(el.dataset.id);
+      });
+
+      selectProblem(problems[0].id);
+    }
+
+    function selectProblem(id) {
+      const p = problems.find(problem => String(problem.id) === String(id));
+      if (!p) return;
+
+      document.querySelectorAll(".problem-card").forEach(el => {
+        el.classList.toggle("active", el.dataset.id === String(id));
+      });
+
+      questionOrigin.innerText = `${examInfo.ingestion_mode || "unknown"} · ${examInfo.source_file || "uploaded file"}`;
+      questionText.innerHTML = `
+        ${escapeHtml(p.question)}
+        ${p.choices.length ? `<br><br>${p.choices.map((choice, index) => `${index + 1}. ${escapeHtml(choice)}`).join("<br>")}` : ""}
+      `;
+      solutionTitle.innerText = p.question || `문제 ${p.no}`;
+      solutionMeta.innerText = [
+        `문제 번호 ${p.no}`,
+        p.module ? `module: ${p.module}` : "",
+        p.topic ? `topic: ${p.topic}` : "",
+        p.reviewStatus ? `review: ${p.reviewStatus}` : "",
+        p.visualRequired ? "시각 요소 포함 문제 / 추후 지원 예정" : "텍스트 기반 문제"
+      ].filter(Boolean).join(" · ");
+      solutionInterpret.innerText = p.explanation || "해설이 비어 있습니다.";
+      solutionSteps.innerHTML = p.choices.length
+        ? p.choices.map((choice, index) => `<li>${index + 1}. ${escapeHtml(choice)}</li>`).join("")
+        : "<li>선택지가 비어 있습니다.</li>";
+      solutionAnswer.innerText = p.answer || "정답 정보가 비어 있습니다.";
+      relatedConcepts.innerHTML = p.tags.length
+        ? p.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")
+        : '<span class="tag">태그 없음</span>';
+      recommendLecture.innerText = p.visualRequired
+        ? "시각 요소 포함 문제 / 추후 지원 예정"
+        : "텍스트 기반으로 추출된 문제입니다.";
+    }
+
+    function renderError(message) {
+      problemCount.innerText = "0문제";
+      problemList.innerHTML = `
+        <div class="problem-card">
+          <div class="problem-title">요청 실패</div>
+          <div class="problem-summary">${escapeHtml(message)}</div>
+        </div>
+      `;
+      questionOrigin.innerText = "FastAPI error response";
+      questionText.innerText = message;
+      solutionTitle.innerText = "요청 실패";
+      solutionMeta.innerText = "FastAPI /solve 응답의 detail 값을 확인하세요.";
+      solutionInterpret.innerText = message;
+      solutionSteps.innerHTML = "<li>파일 선택 상태와 FastAPI 서버 실행 상태를 확인하세요.</li>";
+      solutionAnswer.innerText = "-";
+      relatedConcepts.innerHTML = '<span class="tag">error</span>';
+      recommendLecture.innerText = "-";
+    }
+
+    async function solveUploadedFile() {
+      if (!selectedFile) {
+        fileInput.click();
+        return;
+      }
+
+      openModalBtn.disabled = true;
+      openModalBtn.innerText = "분석 중...";
+      filePreview.innerHTML = `${escapeHtml(selectedFile.name)}<br />POST /solve?module=exam 요청 중`;
+
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        const response = await fetch("/solve?module=exam", {
+          method: "POST",
+          body: formData
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload.detail || `HTTP ${response.status}`);
+        }
+
+        examInfo = payload.exam_info || {};
+        problems = Array.isArray(payload.problems)
+          ? payload.problems.map(normalizeProblem)
+          : [];
+
+        filePreview.innerHTML = `
+          ${escapeHtml(selectedFile.name)}<br />
+          ${escapeHtml(examInfo.ingestion_mode || "ingestion complete")} · ${problems.length}문제
+        `;
+        renderProblems();
+      } catch (error) {
+        renderError(error.message || "알 수 없는 오류가 발생했습니다.");
+      } finally {
+        openModalBtn.disabled = false;
+        openModalBtn.innerText = "풀이 시작 버튼";
+      }
+    }
+
+    fileInput.onchange = () => {
+      selectedFile = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      filePreview.innerHTML = selectedFile
+        ? `${escapeHtml(selectedFile.name)}<br />${escapeHtml(selectedFile.type || "unknown type")}`
+        : "선택된 파일 없음<br />예시: thermo_exam_set_01.pdf";
+    };
+
+    mockUploadBtn.onclick = () => {
+      fileInput.click();
+    };
+
+    openModalBtn.onclick = () => {
+      solveUploadedFile();
+    };
+
+    renderProblems();
+
+    const appShell = document.getElementById("appShell");
+
+    document.getElementById("leftExpandBtn").onclick = () => {
+      appShell.classList.add("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    document.getElementById("rightExpandBtn").onclick = () => {
+      appShell.classList.add("mode-right");
+      appShell.classList.remove("mode-left");
+    };
+
+    document.getElementById("leftReturnBtn").onclick =
+    document.getElementById("rightReturnBtn").onclick = () => {
+      appShell.classList.remove("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    const modal = document.getElementById("solveModal");
+
+    document.getElementById("closeModalTop").onclick =
+    document.getElementById("closeModalBottom").onclick =
+    document.getElementById("modalBackdrop").onclick = () => {
+      modal.classList.remove("open");
+    };
+
+    */
+
+    const TEXT = {
+      chooseFile: "\uc120\ud0dd\ub41c \ud30c\uc77c \uc5c6\uc74c<br />\uc608\uc2dc: thermo_exam_set_01.pdf",
+      emptyTitle: "\uc5c5\ub85c\ub4dc\ud55c \ud30c\uc77c\uc758 \ubd84\uc11d \uacb0\uacfc\uac00 \uc5ec\uae30\uc5d0 \ud45c\uc2dc\ub429\ub2c8\ub2e4.",
+      emptySummary: "PDF, PNG, JPG \ud30c\uc77c\uc744 \uc120\ud0dd\ud55c \ub4a4 \ud480\uc774 \uc2dc\uc791 \ubc84\ud2bc\uc744 \ub20c\ub7ec\uc8fc\uc138\uc694.",
+      problem: "\ubb38\uc81c",
+      problems: "\ubb38\uc81c",
+      visualShort: "\uc2dc\uac01 \uc694\uc18c \ud3ec\ud568",
+      visualNotice: "\uc2dc\uac01 \uc694\uc18c \ud3ec\ud568 \ubb38\uc81c / \ucd94\ud6c4 \uc9c0\uc6d0 \uc608\uc815",
+      aiInterpreted: "AI \ud574\uc11d \ubb38\uc81c (\uadf8\ub798\ud504 \uae30\ubc18)",
+      aiAccuracyNotice: "\uac04\ub2e8 \ud480\uc774 \uc81c\uacf5 / \ud544\uc694 \uc2dc \uac80\uc99d \uad8c\uc7a5",
+      textOnly: "\ud14d\uc2a4\ud2b8",
+      textProblem: "\ud14d\uc2a4\ud2b8 \uae30\ubc18 \ubb38\uc81c",
+      noExplanation: "\ud574\uc124 \uc5c6\uc74c",
+      noChoices: "\uc120\ud0dd\uc9c0\uac00 \ube44\uc5b4 \uc788\uc2b5\ub2c8\ub2e4.",
+      noAnswer: "\uc815\ub2f5 \uc815\ubcf4\uac00 \ube44\uc5b4 \uc788\uc2b5\ub2c8\ub2e4.",
+      noTags: "\ud0dc\uadf8 \uc5c6\uc74c",
+      requestFailed: "\uc694\uccad \uc2e4\ud328",
+      checkDetail: "FastAPI /solve \uc751\ub2f5\uc758 detail \uac12\uc744 \ud655\uc778\ud558\uc138\uc694.",
+      checkServer: "\ud30c\uc77c \uc120\ud0dd \uc0c1\ud0dc\uc640 FastAPI \uc11c\ubc84 \uc2e4\ud589 \uc0c1\ud0dc\ub97c \ud655\uc778\ud558\uc138\uc694.",
+      analyzing: "\ubd84\uc11d \uc911...",
+      requestInProgress: "POST /solve?module=exam \uc694\uccad \uc911",
+      startButton: "\ud480\uc774 \uc2dc\uc791 \ubc84\ud2bc",
+      unknownError: "\uc54c \uc218 \uc5c6\ub294 \uc624\ub958\uac00 \ubc1c\uc0dd\ud588\uc2b5\ub2c8\ub2e4.",
+      extractedText: "\ud14d\uc2a4\ud2b8 \uae30\ubc18\uc73c\ub85c \ucd94\ucd9c\ub41c \ubb38\uc81c\uc785\ub2c8\ub2e4."
+    };
+
+    let liveProblems = [];
+    let liveExamInfo = {};
+    let selectedSolveFile = null;
+    let solveAfterFilePick = false;
+
+    const liveProblemList = document.getElementById("problemList");
+    const liveProblemCount = document.getElementById("problemCount");
+    const liveFilePreview = document.getElementById("filePreview");
+    const liveQuestionOrigin = document.getElementById("questionOrigin");
+    const liveQuestionText = document.getElementById("questionText");
+    const liveSolutionTitle = document.getElementById("solutionTitle");
+    const liveSolutionMeta = document.getElementById("solutionMeta");
+    const liveSolutionInterpret = document.getElementById("solutionInterpret");
+    const liveSolutionSteps = document.getElementById("solutionSteps");
+    const liveSolutionAnswer = document.getElementById("solutionAnswer");
+    const liveRelatedConcepts = document.getElementById("relatedConcepts");
+    const liveRecommendLecture = document.getElementById("recommendLecture");
+    const liveUploadBtn = document.getElementById("mockUploadBtn");
+    const liveSolveBtn = document.getElementById("openModalBtn");
+
+    const liveFileInput = document.createElement("input");
+    liveFileInput.type = "file";
+    liveFileInput.accept = ".pdf,image/png,image/jpeg";
+    liveFileInput.style.display = "none";
+    document.body.appendChild(liveFileInput);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function normalizeLiveProblem(problem, index) {
+      return {
+        id: problem.problem_id || `problem_${index + 1}`,
+        no: problem.problem_no ?? index + 1,
+        question: problem.question || "",
+        choices: Array.isArray(problem.choices) ? problem.choices : [],
+        answer: problem.answer || "",
+        explanation: problem.explanation || "",
+        tags: Array.isArray(problem.tags) ? problem.tags : [],
+        visualRequired: Boolean(problem.visual_required),
+        solveStatus: problem.solve_status ?? "not_started",
+        ingestionStatus: problem.ingestion_status ?? "",
+        warning: problem.warning || "",
+        visualSolution: problem.visual_solution || null,
+        conceptNodes: Array.isArray(problem.concept_nodes) ? problem.concept_nodes : [],
+        module: problem.module || "",
+        topic: problem.topic || "",
+        reviewStatus: problem.review_status || ""
+      };
+    }
+
+    function renderLiveProblems() {
+      liveProblemCount.innerText = `${liveProblems.length}${TEXT.problems}`;
+
+      if (!liveProblems.length) {
+        liveProblemList.innerHTML = `
+          <div class="problem-card">
+            <div class="problem-title">${TEXT.emptyTitle}</div>
+            <div class="problem-summary">${TEXT.emptySummary}</div>
+          </div>
+        `;
+        return;
+      }
+
+      liveProblemList.innerHTML = liveProblems.map((p, index) => `
+        <div class="problem-card ${index === 0 ? "active" : ""}" data-id="${escapeHtml(p.id)}" style="${p.solveStatus === "llm_visual_solved" ? "background:#fffaf0;border-color:#f0d76a;" : (p.solveStatus === "skipped_visual" ? "opacity:0.55;filter:grayscale(1);" : "")}">
+          <div class="problem-top">
+            <span class="problem-no">${TEXT.problem} ${escapeHtml(p.no)}</span>
+            <span class="difficulty" style="${p.solveStatus === "llm_visual_solved" ? "background:#fff7cc;border-color:#f0d76a;color:#8a6500;" : ""}">${p.solveStatus === "llm_visual_solved" ? TEXT.aiInterpreted : (p.solveStatus === "skipped_visual" ? "skipped_visual" : (p.visualRequired ? TEXT.visualShort : TEXT.textOnly))}</span>
+          </div>
+          <h4 class="problem-title">${escapeHtml(p.question || `${TEXT.problem} ${p.no}`)}</h4>
+          <div class="problem-summary">${escapeHtml((p.visualSolution && p.visualSolution.interpretation) || p.explanation || TEXT.noExplanation)}</div>
+          <div class="problem-footer">
+            ${p.tags.slice(0, 3).map(tag => `<span class="tiny-pill">${escapeHtml(tag)}</span>`).join("")}
+          </div>
+          ${p.solveStatus === "llm_visual_solved" ? `<div class="problem-summary" style="margin-top:8px;color:#8a6500;font-size:12px;">${TEXT.aiAccuracyNotice}</div>` : ""}
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".problem-card[data-id]").forEach(el => {
+        el.onclick = () => selectLiveProblem(el.dataset.id);
+      });
+
+      selectLiveProblem(liveProblems[0].id);
+    }
+
+    function selectLiveProblem(id) {
+      const p = liveProblems.find(problem => String(problem.id) === String(id));
+      if (!p) return;
+
+      document.querySelectorAll(".problem-card").forEach(el => {
+        el.classList.toggle("active", el.dataset.id === String(id));
+      });
+
+      liveQuestionOrigin.innerText = `${liveExamInfo.ingestion_mode || "unknown"} · ${liveExamInfo.source_file || "uploaded file"}`;
+      liveQuestionText.innerHTML = `
+        ${escapeHtml(p.question)}
+        ${p.choices.length ? `<br><br>${p.choices.map((choice, index) => `${index + 1}. ${escapeHtml(choice)}`).join("<br>")}` : ""}
+      `;
+      liveSolutionTitle.innerText = p.question || `${TEXT.problem} ${p.no}`;
+      liveSolutionMeta.innerText = [
+        `${TEXT.problem} ${p.no}`,
+        p.module ? `module: ${p.module}` : "",
+        p.topic ? `topic: ${p.topic}` : "",
+        p.ingestionStatus ? `ingestion_status: ${p.ingestionStatus}` : "",
+        p.solveStatus ? `solve_status: ${p.solveStatus}` : "",
+        p.warning ? p.warning : "",
+        p.reviewStatus ? `review: ${p.reviewStatus}` : "",
+        p.visualRequired ? TEXT.visualNotice : TEXT.textProblem
+      ].filter(Boolean).join(" · ");
+      liveSolutionInterpret.innerText = p.visualSolution
+        ? p.visualSolution.interpretation
+        : (p.explanation || TEXT.noExplanation);
+      if (p.visualSolution) {
+        const formulaItem = p.visualSolution.formula
+          ? `<li>${escapeHtml(p.visualSolution.formula)}</li>`
+          : "";
+        const stepItems = Array.isArray(p.visualSolution.steps)
+          ? p.visualSolution.steps.map(step => `<li>${escapeHtml(step)}</li>`).join("")
+          : "";
+        liveSolutionSteps.innerHTML = formulaItem + stepItems || `<li>${TEXT.noChoices}</li>`;
+      } else {
+        liveSolutionSteps.innerHTML = p.choices.length
+          ? p.choices.map((choice, index) => `<li>${index + 1}. ${escapeHtml(choice)}</li>`).join("")
+          : `<li>${TEXT.noChoices}</li>`;
+      }
+      liveSolutionAnswer.innerText = p.visualSolution ? p.visualSolution.answer : (p.answer || TEXT.noAnswer);
+      liveRelatedConcepts.innerHTML = p.conceptNodes.length
+        ? p.conceptNodes.map(node => `<span class="tag">${escapeHtml(node.label || node.node_key)} · ${escapeHtml(node.node_key)}</span>`).join("")
+        : p.tags.length
+          ? p.tags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join("")
+          : `<span class="tag">${TEXT.noTags}</span>`;
+      liveRecommendLecture.innerText = p.solveStatus === "llm_visual_solved"
+        ? `${TEXT.aiInterpreted} · ${TEXT.aiAccuracyNotice}`
+        : (p.visualRequired ? TEXT.visualNotice : TEXT.extractedText);
+    }
+
+    function renderLiveError(message) {
+      liveProblemCount.innerText = `0${TEXT.problems}`;
+      liveProblemList.innerHTML = `
+        <div class="problem-card">
+          <div class="problem-title">${TEXT.requestFailed}</div>
+          <div class="problem-summary">${escapeHtml(message)}</div>
+        </div>
+      `;
+      liveQuestionOrigin.innerText = "FastAPI error response";
+      liveQuestionText.innerText = message;
+      liveSolutionTitle.innerText = TEXT.requestFailed;
+      liveSolutionMeta.innerText = TEXT.checkDetail;
+      liveSolutionInterpret.innerText = message;
+      liveSolutionSteps.innerHTML = `<li>${TEXT.checkServer}</li>`;
+      liveSolutionAnswer.innerText = "-";
+      liveRelatedConcepts.innerHTML = '<span class="tag">error</span>';
+      liveRecommendLecture.innerText = "-";
+    }
+
+    async function solveUploadedFile() {
+      if (!selectedSolveFile) {
+        solveAfterFilePick = true;
+        liveFileInput.click();
+        return;
+      }
+
+      liveSolveBtn.disabled = true;
+      liveSolveBtn.innerText = TEXT.analyzing;
+      liveFilePreview.innerHTML = `${escapeHtml(selectedSolveFile.name)}<br />${TEXT.requestInProgress}`;
+
+      const formData = new FormData();
+      formData.append("file", selectedSolveFile);
+
+      try {
+        const response = await fetch("/solve?module=exam", {
+          method: "POST",
+          body: formData
+        });
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(payload.detail || `HTTP ${response.status}`);
+        }
+
+        liveExamInfo = payload.exam_info || {};
+        liveProblems = Array.isArray(payload.problems)
+          ? payload.problems.map(normalizeLiveProblem)
+          : [];
+
+        liveFilePreview.innerHTML = `
+          ${escapeHtml(selectedSolveFile.name)}<br />
+          ${escapeHtml(liveExamInfo.ingestion_mode || "ingestion complete")} · ${liveProblems.length}${TEXT.problems}
+        `;
+        renderLiveProblems();
+      } catch (error) {
+        renderLiveError(error.message || TEXT.unknownError);
+      } finally {
+        liveSolveBtn.disabled = false;
+        liveSolveBtn.innerText = TEXT.startButton;
+      }
+    }
+
+    liveFileInput.onchange = () => {
+      selectedSolveFile = liveFileInput.files && liveFileInput.files[0] ? liveFileInput.files[0] : null;
+      liveFilePreview.innerHTML = selectedSolveFile
+        ? `${escapeHtml(selectedSolveFile.name)}<br />${escapeHtml(selectedSolveFile.type || "unknown type")}`
+        : TEXT.chooseFile;
+
+      if (selectedSolveFile && solveAfterFilePick) {
+        solveAfterFilePick = false;
+        solveUploadedFile();
+      }
+    };
+
+    liveUploadBtn.onclick = () => {
+      solveAfterFilePick = false;
+      liveFileInput.click();
+    };
+    liveSolveBtn.onclick = () => solveUploadedFile();
+
+    renderLiveProblems();
+
+    const appShell = document.getElementById("appShell");
+
+    document.getElementById("leftExpandBtn").onclick = () => {
+      appShell.classList.add("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    document.getElementById("rightExpandBtn").onclick = () => {
+      appShell.classList.add("mode-right");
+      appShell.classList.remove("mode-left");
+    };
+
+    document.getElementById("leftReturnBtn").onclick =
+    document.getElementById("rightReturnBtn").onclick = () => {
+      appShell.classList.remove("mode-left");
+      appShell.classList.remove("mode-right");
+    };
+
+    const modal = document.getElementById("solveModal");
+
+    document.getElementById("closeModalTop").onclick =
+    document.getElementById("closeModalBottom").onclick =
+    document.getElementById("modalBackdrop").onclick = () => {
+      modal.classList.remove("open");
+    };
+
+  </script>
+</body>
+</html>

@@ -75,3 +75,96 @@ def test_problem_block_parser_splits_compact_number_parenthesis_format() -> None
     assert blocks[1].startswith("팽창밸브 통과 후")
     assert "가. 압축비 증가" in blocks[0]
     assert "가. 압력이 낮아진다" in blocks[1]
+
+def test_problem_block_parser_splits_zero_padded_space_format() -> None:
+    raw_text = """
+01 first question text
+A) 450 kJ
+B) 350 kJ
+
+02 second question text
+A) 30 kJ
+B) 200 kJ
+"""
+
+    blocks = split_problem_blocks(raw_text)
+
+    assert len(blocks) == 2
+    assert blocks[0].startswith("first question text")
+    assert blocks[1].startswith("second question text")
+
+
+def test_problem_block_parser_splits_number_dot_format() -> None:
+    raw_text = """
+1. first question text
+A) 450 kJ
+B) 350 kJ
+
+2. second question text
+A) 30 kJ
+B) 200 kJ
+"""
+
+    blocks = split_problem_blocks(raw_text)
+
+    assert len(blocks) == 2
+    assert blocks[0].startswith("first question text")
+    assert blocks[1].startswith("second question text")
+
+
+def test_problem_block_parser_splits_number_parenthesis_format() -> None:
+    raw_text = """
+1) first question text
+A) 450 kJ
+B) 350 kJ
+
+2) second question text
+A) 30 kJ
+B) 200 kJ
+"""
+
+    blocks = split_problem_blocks(raw_text)
+
+    assert len(blocks) == 2
+    assert blocks[0].startswith("first question text")
+    assert blocks[1].startswith("second question text")
+
+
+def test_problem_block_parser_splits_korean_prefix_format() -> None:
+    raw_text = """
+문제 01 first question text
+A) 450 kJ
+B) 350 kJ
+
+문항 02 second question text
+A) 30 kJ
+B) 200 kJ
+"""
+
+    blocks = split_problem_blocks(raw_text)
+
+    assert len(blocks) == 2
+    assert blocks[0].startswith("first question text")
+    assert blocks[1].startswith("second question text")
+
+
+def test_problem_block_parser_does_not_split_circled_choice_numbers() -> None:
+    raw_text = """
+01 first question text
+① 450 kJ
+② 350 kJ
+③ 250 kJ
+④ 150 kJ
+
+02 second question text
+① 30 kJ
+② 200 kJ
+③ 3000 kJ
+④ 6000 kJ
+"""
+
+    blocks = split_problem_blocks(raw_text)
+
+    assert len(blocks) == 2
+    assert "① 450 kJ" in blocks[0]
+    assert "④ 6000 kJ" in blocks[1]
