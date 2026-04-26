@@ -1,8 +1,8 @@
 import json
 import os
 import shutil
-from uuid import uuid4
 from pathlib import Path
+from uuid import uuid4
 
 import requests
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -13,6 +13,12 @@ from engine.ingestion.run_pdf_to_exam_json import run_pipeline as run_exam_pipel
 
 app = FastAPI()
 UPLOAD_TMP_ROOT = Path("solve_tmp")
+IMPORTANCE_DEFAULT = {
+    "score": 0.0,
+    "frequency": 0,
+    "difficulty": 0,
+    "recency": 0,
+}
 
 
 @app.post("/solve")
@@ -47,7 +53,9 @@ def solve(
             subject=subject,
             round=round,
         )
-        return _apply_visual_llm_policy(payload)
+        payload = _apply_visual_llm_policy(payload)
+        payload = _attach_lecture_materials(payload)
+        return payload
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
     finally:
@@ -58,6 +66,110 @@ def solve(
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse("ui_mock/index.html")
+
+
+def _attach_lecture_materials(payload: dict) -> dict:
+    topic_mapping = []
+    try:
+        with open("data/topic_mapping.json", "r", encoding="utf-8") as f:
+            topic_mapping = json.load(f)
+    except Exception:
+        pass
+
+    for problem in payload.get("problems", []):
+        problem.setdefault("related_lecture_materials", [])
+        problem.setdefault("topic_id", "")
+        problem.setdefault("importance", dict(IMPORTANCE_DEFAULT))
+        if not isinstance(problem.get("importance"), dict):
+            problem["importance"] = dict(IMPORTANCE_DEFAULT)
+        else:
+            for key, value in IMPORTANCE_DEFAULT.items():
+                problem["importance"].setdefault(key, value)
+
+        topic_id = str(problem.get("topic_id") or "").strip()
+        if not topic_id:
+            topic_id = _infer_topic_id_from_problem(problem, topic_mapping)
+            if topic_id:
+                problem["topic_id"] = topic_id
+
+        lecture_id = _resolve_lecture_id(problem, topic_mapping, topic_id)
+        if not lecture_id:
+            continue
+
+        lecture_path = Path(f"data/lectures/{lecture_id}.json")
+        if lecture_path.is_file():
+            try:
+                with lecture_path.open("r", encoding="utf-8") as f:
+                    problem["related_lecture_materials"].append(json.load(f))
+            except Exception:
+                pass
+    return payload
+
+
+def _infer_topic_id_from_problem(problem: dict, topic_mapping: list[dict]) -> str:
+    direct_topic_id = str(problem.get("topic_id") or "").strip()
+    if direct_topic_id:
+        return direct_topic_id
+
+    concept_values = {_normalize_text(value) for value in _concept_node_strings(problem.get("concept_nodes"))}
+    concept_values.discard("")
+    if concept_values:
+        for item in topic_mapping:
+            mapped_concepts = {
+                _normalize_text(value)
+                for value in item.get("concept_nodes", [])
+                if isinstance(value, str)
+            }
+            mapped_concepts.discard("")
+            if mapped_concepts and concept_values.intersection(mapped_concepts):
+                return str(item.get("topic_id") or "").strip()
+
+    topic = str(problem.get("topic") or "").strip()
+    if topic:
+        for item in topic_mapping:
+            if item.get("topic") == topic or item.get("topic_id") == topic:
+                return str(item.get("topic_id") or "").strip()
+
+    return ""
+
+
+def _resolve_lecture_id(problem: dict, topic_mapping: list[dict], topic_id: str) -> str:
+    if topic_id:
+        for item in topic_mapping:
+            if str(item.get("topic_id") or "").strip() == topic_id:
+                return str(item.get("lecture_id") or item.get("topic_id") or "").strip()
+
+    topic = str(problem.get("topic") or "").strip()
+    if topic:
+        for item in topic_mapping:
+            if item.get("topic") == topic or item.get("topic_id") == topic:
+                return str(item.get("lecture_id") or topic).strip()
+        return topic
+
+    return ""
+
+
+def _concept_node_strings(value: object) -> list[str]:
+    if not isinstance(value, list):
+        return []
+
+    normalized: list[str] = []
+    for item in value:
+        if isinstance(item, str):
+            text = item.strip()
+            if text:
+                normalized.append(text)
+        elif isinstance(item, dict):
+            for key in ("node_key", "label", "text"):
+                raw = item.get(key)
+                if isinstance(raw, str) and raw.strip():
+                    normalized.append(raw.strip())
+                    break
+    return normalized
+
+
+def _normalize_text(value: str) -> str:
+    return " ".join(str(value).casefold().split())
 
 
 def _apply_visual_llm_policy(payload: dict) -> dict:

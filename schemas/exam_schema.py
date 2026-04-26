@@ -1,6 +1,6 @@
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 ReviewStatus = Literal[
@@ -40,6 +40,16 @@ class ExamProblemSchema(BaseModel):
     tags: list[str]
     visual_required: bool
     review_status: ReviewStatus
+    concept_nodes: list[str] = Field(default_factory=list)
+    topic_id: str = ""
+    importance: dict[str, Any] = Field(
+        default_factory=lambda: {
+            "score": 0.0,
+            "frequency": 0,
+            "difficulty": 0,
+            "recency": 0,
+        }
+    )
     answer_choice: int | None = None
     source_page: int | None = None
     ingestion_mode: IngestionMode | None = None

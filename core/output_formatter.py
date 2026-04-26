@@ -14,6 +14,8 @@ def format_final_output(
     used_fallback = fallback_result is not None
     source = fallback_result if used_fallback else validated_output
     source = source if isinstance(source, dict) else {}
+    concept_nodes = _output_concept_nodes(structured, source)
+    importance = _safe_importance(structured.get("importance") or source.get("importance"))
 
     depth = _safe_depth(source.get("depth") or source.get("depth_info"))
     concept_chain = _safe_list(source.get("concept_chain"))
@@ -34,6 +36,8 @@ def format_final_output(
         "subject": _safe_text(structured.get("subject")),
         "topic": _safe_text(structured.get("topic")),
         "concepts": _safe_list(structured.get("concepts")),
+        "concept_nodes": concept_nodes,
+        "importance": importance,
         "rag_result": safe_rag_result,
         "llm_result": llm_result if isinstance(llm_result, dict) else {},
         "validation": {
@@ -127,6 +131,52 @@ def _safe_text(value: Any) -> str:
     if value is None:
         return ""
     return str(value)
+
+
+def _safe_importance(value: Any) -> dict:
+    importance = value if isinstance(value, dict) else {}
+    return {
+        "score": float(importance.get("score", 0.0) or 0.0),
+        "frequency": int(importance.get("frequency", 0) or 0),
+        "difficulty": int(importance.get("difficulty", 0) or 0),
+        "recency": int(importance.get("recency", 0) or 0),
+    }
+
+
+def _output_concept_nodes(structured: dict, source: dict) -> list[str]:
+    concept_nodes = _normalize_concept_node_strings(structured.get("concept_nodes"))
+    if concept_nodes:
+        return concept_nodes
+
+    concept_nodes = _normalize_concept_node_strings(structured.get("concepts"))
+    if concept_nodes:
+        return concept_nodes
+
+    concept_nodes = _normalize_concept_node_strings(structured.get("related_nodes"))
+    if concept_nodes:
+        return concept_nodes
+
+    concept_nodes = _normalize_concept_node_strings(source.get("concept_nodes"))
+    if concept_nodes:
+        return concept_nodes
+
+    return []
+
+
+def _normalize_concept_node_strings(value: Any) -> list[str]:
+    normalized: list[str] = []
+    for item in _safe_list(value):
+        if isinstance(item, str):
+            text = item.strip()
+            if text:
+                normalized.append(text)
+        elif isinstance(item, dict):
+            for key in ("node_key", "label", "text"):
+                raw = item.get(key)
+                if isinstance(raw, str) and raw.strip():
+                    normalized.append(raw.strip())
+                    break
+    return normalized
 
 
 def _related_lecture_materials(rag_result: dict, concepts: list | None = None) -> list[dict]:
