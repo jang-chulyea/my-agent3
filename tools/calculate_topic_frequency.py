@@ -1,41 +1,14 @@
-"""Calculate topic frequency analytics from a single exam JSON file."""
-
 from __future__ import annotations
 
 import argparse
 import json
 from collections import Counter
 from pathlib import Path
-from typing import Any
+from typing import Any, List
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_INPUT_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "exams"
-    / "ac_refrigeration_engineer"
-    / "2024_1"
-    / "exam_2024_1.json"
-)
 DEFAULT_OUTPUT_PATH = PROJECT_ROOT / "data" / "analytics" / "topic_frequency.json"
-
-
-def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Count problem topics from a single exam JSON file."
-    )
-    parser.add_argument(
-        "--input",
-        default=str(DEFAULT_INPUT_PATH),
-        help="Input path for the exam JSON file.",
-    )
-    parser.add_argument(
-        "--output",
-        default=str(DEFAULT_OUTPUT_PATH),
-        help="Output path for the topic frequency JSON file.",
-    )
-    return parser.parse_args()
 
 
 def load_exam_payload(input_path: Path) -> dict[str, Any]:
@@ -48,43 +21,67 @@ def load_exam_payload(input_path: Path) -> dict[str, Any]:
     return payload
 
 
-def calculate_topic_frequency(input_path: Path) -> dict[str, Any]:
-    payload = load_exam_payload(input_path)
-    problems = payload.get("problems", [])
-    if not isinstance(problems, list):
-        raise ValueError("'problems' must be a list in the exam JSON")
+def resolve_input_files(input_path: Path) -> List[Path]:
+    if input_path.is_file():
+        return [input_path]
 
+    if input_path.is_dir():
+        return [p for p in input_path.glob("*.json") if p.is_file()]
+
+    raise ValueError(f"Invalid input path: {input_path}")
+
+
+def calculate_topic_frequency(input_path: Path) -> dict[str, Any]:
     counter: Counter[str] = Counter()
+    processed_files = 0
     processed_problems = 0
     skipped_problems = 0
 
-    for problem in problems:
-        if not isinstance(problem, dict):
-            skipped_problems += 1
-            continue
+    input_files = resolve_input_files(input_path)
 
-        processed_problems += 1
-        topic = problem.get("topic")
-        if not isinstance(topic, str) or not topic.strip():
-            skipped_problems += 1
-            continue
+    for json_file in input_files:
+        payload = load_exam_payload(json_file)
+        problems = payload.get("problems", [])
 
-        counter[topic.strip()] += 1
+        if not isinstance(problems, list):
+            raise ValueError(f"'problems' must be a list in {json_file}")
+
+        processed_files += 1
+
+        for problem in problems:
+            if not isinstance(problem, dict):
+                skipped_problems += 1
+                continue
+
+            processed_problems += 1
+
+            topic = problem.get("topic")
+            if not isinstance(topic, str) or not topic.strip():
+                skipped_problems += 1
+                continue
+
+            counter[topic.strip()] += 1
 
     topic_frequency = [
-        {"topic": topic, "frequency": frequency}
-        for topic, frequency in sorted(counter.items(), key=lambda item: (-item[1], item[0]))
+        {"topic": topic, "frequency": freq}
+        for topic, freq in sorted(counter.items(), key=lambda x: (-x[1], x[0]))
     ]
 
+    summary = {
+        "processed_files": processed_files,
+        "processed_problems": processed_problems,
+        "skipped_problems": skipped_problems,
+        "counted_topics": sum(counter.values()),
+        "unique_topics": len(counter),
+    }
+    
+    if input_path.is_file():
+        summary["input_file"] = str(input_path)
+    else:
+        summary["input_path"] = str(input_path)
+
     return {
-        "summary": {
-            "input_file": str(input_path),
-            "processed_files": 1,
-            "processed_problems": processed_problems,
-            "skipped_problems": skipped_problems,
-            "counted_topics": sum(counter.values()),
-            "unique_topics": len(counter),
-        },
+        "summary": summary,
         "topics": topic_frequency,
     }
 
@@ -99,9 +96,18 @@ def save_topic_frequency(output_path: Path, analytics: dict[str, Any]) -> Path:
 
 
 def main() -> None:
-    args = parse_args()
-    analytics = calculate_topic_frequency(Path(args.input))
-    output_path = save_topic_frequency(Path(args.output), analytics)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", required=True)
+    parser.add_argument("--output", default=str(DEFAULT_OUTPUT_PATH))
+
+    args = parser.parse_args()
+
+    input_path = Path(args.input)
+    output_path = Path(args.output)
+
+    analytics = calculate_topic_frequency(input_path)
+    save_topic_frequency(output_path, analytics)
+
     print(f"Saved topic frequency analytics to: {output_path}")
 
 
