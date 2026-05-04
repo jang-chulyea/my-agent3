@@ -1,0 +1,32 @@
+{
+  "summary": {
+    "input_file": "D:\\My_agent3.0\\data\\exams\\ac_refrigeration_engineer\\2024_1\\exam_2024_1.json",
+    "processed_files": 1,
+    "processed_problems": 5,
+    "skipped_problems": 0,
+    "counted_topics": 5,
+    "unique_topics": 5
+  },
+  "topics": [
+    {
+      "topic": "냉동사이클",
+      "frequency": 1
+    },
+    {
+      "topic": "열역학 제1법칙",
+      "frequency": 1
+    },
+    {
+      "topic": "열역학 제2법칙",
+      "frequency": 1
+    },
+    {
+      "topic": "증발기",
+      "frequency": 1
+    },
+    {
+      "topic": "팽창밸브",
+      "frequency": 1
+    }
+  ]
+}
