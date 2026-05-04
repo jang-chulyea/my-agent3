@@ -1,0 +1,157 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Practice Question Schema",
+  "description": "Schema for practice questions in the educational system",
+  "type": "object",
+  "required": [
+    "id",
+    "subject",
+    "topic",
+    "question",
+    "answer",
+    "explanation",
+    "difficulty",
+    "source"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the practice question",
+      "pattern": "^practice_[a-zA-Z0-9_-]+$"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject area (e.g., 'thermodynamics', 'physics', 'math')",
+      "examples": ["thermodynamics", "physics", "mathematics"]
+    },
+    "topic": {
+      "type": "string",
+      "description": "Specific topic within the subject",
+      "examples": ["constant_pressure_boundary_work", "gas_laws", "calculus"]
+    },
+    "question": {
+      "type": "string",
+      "description": "The question text",
+      "minLength": 10
+    },
+    "question_type": {
+      "type": "string",
+      "description": "Type of question",
+      "enum": ["conceptual", "calculation", "multiple_choice", "true_false", "analysis"],
+      "default": "conceptual"
+    },
+    "choices": {
+      "type": "array",
+      "description": "Multiple choice options (required for multiple_choice type)",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 2,
+      "maxItems": 6
+    },
+    "given": {
+      "type": "object",
+      "description": "Data provided for calculation problems",
+      "additionalProperties": true
+    },
+    "asked": {
+      "type": "string",
+      "description": "What is being asked (for calculation problems)"
+    },
+    "answer": {
+      "description": "The correct answer",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Text answer for conceptual questions"
+        },
+        {
+          "type": "number",
+          "description": "Numeric answer for calculations"
+        },
+        {
+          "type": "boolean",
+          "description": "True/false answer"
+        },
+        {
+          "type": "array",
+          "description": "Multiple correct answers or steps",
+          "items": {
+            "type": ["string", "number"]
+          }
+        }
+      ]
+    },
+    "explanation": {
+      "type": "string",
+      "description": "Detailed explanation of the answer",
+      "minLength": 20
+    },
+    "difficulty": {
+      "type": "string",
+      "description": "Difficulty level",
+      "enum": ["easy", "medium", "hard", "expert"],
+      "default": "medium"
+    },
+    "source": {
+      "type": "string",
+      "description": "Origin of the question",
+      "enum": ["generated", "exam", "textbook", "practice"],
+      "default": "generated"
+    },
+    "concepts": {
+      "type": "array",
+      "description": "Key concepts covered",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "tags": {
+      "type": "array",
+      "description": "Additional tags for categorization",
+      "items": {
+        "type": "string"
+      }
+    },
+    "estimated_time": {
+      "type": "number",
+      "description": "Estimated time to solve in minutes",
+      "minimum": 1,
+      "maximum": 60
+    },
+    "hints": {
+      "type": "array",
+      "description": "Optional hints for difficult questions",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "question_type": {
+            "const": "multiple_choice"
+          }
+        }
+      },
+      "then": {
+        "required": ["choices"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "question_type": {
+            "const": "calculation"
+          }
+        }
+      },
+      "then": {
+        "required": ["given", "asked"]
+      }
+    }
+  ]
+}

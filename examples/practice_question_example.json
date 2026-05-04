@@ -1,0 +1,37 @@
+{
+  "id": "practice_constant_pressure_boundary_work_001",
+  "subject": "thermodynamics",
+  "topic": "constant_pressure_boundary_work",
+  "question": "A piston-cylinder device contains 0.5 kg of steam at 200 kPa and 150°C. The steam is heated at constant pressure until its temperature reaches 300°C. Calculate the boundary work done by the steam.",
+  "question_type": "calculation",
+  "given": {
+    "mass": 0.5,
+    "mass_unit": "kg",
+    "initial_pressure": 200,
+    "pressure_unit": "kPa",
+    "initial_temperature": 150,
+    "final_temperature": 300,
+    "temperature_unit": "°C",
+    "specific_volume_initial": 1.0528,
+    "specific_volume_final": 1.4163,
+    "specific_volume_unit": "m³/kg"
+  },
+  "asked": "boundary_work",
+  "answer": 36.36,
+  "explanation": "The boundary work for a constant pressure process is W = PΔV. First calculate the volume change: ΔV = m(v₂ - v₁) = 0.5 × (1.4163 - 1.0528) = 0.18175 m³. Then W = 200 kPa × 0.18175 m³ = 36.35 kJ (rounded to 36.36 kJ).",
+  "difficulty": "medium",
+  "source": "generated",
+  "concepts": [
+    "boundary_work",
+    "constant_pressure_process",
+    "first_law_thermodynamics",
+    "steam_tables"
+  ],
+  "tags": [
+    "thermodynamics",
+    "work",
+    "steam",
+    "piston_cylinder"
+  ],
+  "estimated_time": 15
+}

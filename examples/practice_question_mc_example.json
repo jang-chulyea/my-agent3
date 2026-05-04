@@ -1,0 +1,37 @@
+{
+  "id": "practice_constant_pressure_boundary_work_002",
+  "subject": "thermodynamics",
+  "topic": "constant_pressure_boundary_work",
+  "question": "Two identical cylinders contain the same amount of ideal gas initially at the same state. Cylinder A has a free piston and is heated by 100 K at constant pressure. Cylinder B has a locked piston and is heated by 100 K at constant volume. Which statement is correct?",
+  "question_type": "multiple_choice",
+  "choices": [
+    "Both cylinders require the same heat input because they have the same internal energy change.",
+    "Cylinder A requires more heat than B because it must do expansion work.",
+    "Cylinder B requires more heat than A, but work done on the gas is different.",
+    "Both cylinders have the same heat input and same work because the temperature change is identical."
+  ],
+  "answer": "Cylinder A requires more heat than B because it must do expansion work.",
+  "explanation": "Both cylinders experience the same temperature change (ΔT = 100 K), so they have the same change in internal energy (ΔU = nCvΔT). However, Cylinder A does expansion work (W > 0) while Cylinder B does no work (W = 0). From the First Law (Q = ΔU + W), Cylinder A requires more heat input because it must provide energy for both internal energy increase and expansion work. The heat ratio Q_A/Q_B = Cp/Cv ≈ 1.4 for diatomic gases.",
+  "difficulty": "hard",
+  "source": "generated",
+  "concepts": [
+    "first_law_thermodynamics",
+    "constant_pressure_process",
+    "constant_volume_process",
+    "heat_capacity",
+    "expansion_work"
+  ],
+  "tags": [
+    "thermodynamics",
+    "first_law",
+    "work",
+    "heat_capacity",
+    "comparison"
+  ],
+  "estimated_time": 20,
+  "hints": [
+    "Remember Q = ΔU + W for both processes",
+    "Internal energy change depends only on temperature change",
+    "Work depends on the process type"
+  ]
+}
